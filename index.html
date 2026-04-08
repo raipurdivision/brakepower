@@ -1,0 +1,1913 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brake Power - Check of Goods Train</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #17258e 0%, #87ceeb 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1160px;
+            margin: 0 auto;
+            background: rgb(138, 201, 241);
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+            color: white;
+            border-bottom: 4px solid #FFD700;
+            padding: 10px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 1.8em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 2px;
+        }
+
+        .header h2 {
+            font-size: 1.05em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            margin-top: 0;
+            color: white;
+        }
+
+        .header h3 {
+            font-size: 0.9em;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #FFD700;
+            margin-top: 2px;
+            margin-bottom: 0;
+            opacity: 0.88;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 13px;
+        }
+
+        .voice-toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mobile-toggle-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mobile-toggle-label {
+            color: white;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        /* Mobile view styles */
+        body.mobile-view .container {
+            max-width: 100%;
+            margin: 0;
+            border-radius: 0;
+        }
+
+        body.mobile-view {
+            padding: 0;
+        }
+
+        body.mobile-view .header h1 {
+            font-size: 1.3em;
+        }
+
+        body.mobile-view .header h2 {
+            font-size: 0.9em;
+        }
+
+        body.mobile-view .header-content {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        body.mobile-view .form-container {
+            padding: 15px;
+        }
+
+        body.mobile-view .info-fields {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        body.mobile-view .info-field {
+            flex: 1 1 100%;
+        }
+
+        body.mobile-view table {
+            font-size: 10px;
+        }
+
+        body.mobile-view th,
+        body.mobile-view td {
+            padding: 5px 3px;
+            font-size: 9px;
+        }
+
+        body.mobile-view input[type="text"],
+        body.mobile-view input[type="time"],
+        body.mobile-view input[type="date"],
+        body.mobile-view select,
+        body.mobile-view textarea {
+            font-size: 11px;
+            padding: 5px;
+        }
+
+        body.mobile-view .button-group {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        body.mobile-view button {
+            width: 100%;
+            padding: 10px 15px;
+            font-size: 0.9em;
+        }
+
+        body.mobile-view .table-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .voice-toggle-label {
+            color: white;
+            font-size: 0.85em;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            display: inline-block;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ffb366;
+            transition: 0.4s;
+            border-radius: 26px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        input:checked + .slider {
+            background-color: #2ecc71;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .voice-status {
+            color: white;
+            font-size: 0.75em;
+            font-weight: bold;
+            min-width: 30px;
+        }
+
+        .voice-indicator {
+            display: none;
+            color: white;
+            font-size: 1.3em;
+            animation: pulse 1.5s infinite;
+            margin-left: 5px;
+        }
+
+        .voice-indicator.listening {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .listening-text {
+            font-size: 0.75em;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            color: #e74c3c;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.05);
+                opacity: 0.9;
+            }
+        }
+
+        .input-with-mic {
+            position: relative;
+        }
+
+        .mic-icon {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            font-size: 18px;
+            color: #999;
+            transition: color 0.3s;
+        }
+
+        .mic-icon.active {
+            color: #e74c3c;
+            animation: micPulse 1s infinite;
+        }
+
+        @keyframes micPulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        .form-container {
+            padding: 30px;
+            background: #c3d0d1;
+        }
+
+        .info-section {
+            background: rgb(255, 255, 255);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .info-section h2 {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .info-fields {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .info-field {
+            flex: 0 1 350px;
+        }
+
+        .info-field.full-width {
+            flex: 1 1 100%;
+        }
+
+        .info-field label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-size: 12px;
+        }
+
+        .info-field input {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #b3d9ff;
+            border-radius: 5px;
+            font-size: 12px;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .info-field input:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
+        }
+
+        .checklist-section {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .checklist-section h3 {
+            font-size: 1em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .checklist-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #f0f8ff;
+            border-left: 4px solid #4a90e2;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: linear-gradient(135deg, #5b9dd9 0%, #4a8ec2 100%);
+            color: white;
+        }
+
+        th {
+            padding: 15px 10px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 12px;
+            border: 2px solid #3a7ca5;
+            text-transform: uppercase;
+        }
+
+        tbody tr {
+            transition: background-color 0.3s;
+        }
+
+        tbody tr:nth-child(odd) {
+            background-color: #f0f8ff;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+
+        tbody tr:hover {
+            background-color: #d4e9ff;
+        }
+
+        td {
+            padding: 10px;
+            border: 1px solid #b3d9ff;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        td:first-child {
+            font-weight: bold;
+            background-color: #e6f2ff;
+            font-size: 12px;
+        }
+
+        input[type="text"],
+        textarea {
+            text-transform: uppercase;
+        }
+
+        input[type="text"],
+        input[type="time"],
+        input[type="date"],
+        input[type="file"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #b3d9ff;
+            border-radius: 5px;
+            font-size: 12px;
+            font-weight: bold;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="time"]:focus,
+        input[type="date"]:focus,
+        input[type="file"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #4a90e2;
+            box-shadow: 0 0 8px rgba(74, 144, 226, 0.3);
+        }
+
+        .remarks-section {
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+
+        .remarks-section label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+            font-size: 12px;
+        }
+
+        .remarks-section textarea {
+            width: 100%;
+            font-size: 12px;
+            min-height: 60px;
+            border: 1px solid #b3d9ff;
+            overflow-y: hidden;
+            resize: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 1em;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .add-row-btn {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+            color: white;
+        }
+
+        .add-row-btn:hover {
+            background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #2980b9 0%, #21618c 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .pdf-btn {
+            background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+            color: white;
+        }
+
+        .pdf-btn:hover {
+            background: linear-gradient(135deg, #d35400 0%, #ba4a00 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .save-draft-btn {
+            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
+            color: white;
+        }
+
+        .save-draft-btn:hover {
+            background: linear-gradient(135deg, #8e44ad 0%, #7d3c98 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        .upload-draft-btn {
+            background: linear-gradient(135deg, #16a085 0%, #138d75 100%);
+            color: white;
+        }
+
+        .upload-draft-btn:hover {
+            background: linear-gradient(135deg, #138d75 0%, #117a65 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        }
+
+        #draftFileInput {
+            display: none;
+        }
+
+        .message {
+            display: none;
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+
+        /* Zoom Overlay Styles */
+        .zoom-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .zoom-overlay.active {
+            display: flex;
+        }
+
+        .zoom-input-container {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .zoom-input-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .zoom-input-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .zoom-close-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            font-size: 1.5em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+
+        .zoom-close-btn:hover {
+            background: #c0392b;
+        }
+
+        .zoom-input {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            font-size: 18px;
+            border: 2px solid #4a90e2;
+            border-radius: 8px;
+            resize: vertical;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .zoom-input:focus {
+            outline: none;
+            border-color: #357abd;
+            box-shadow: 0 0 10px rgba(74, 144, 226, 0.3);
+        }
+
+        .zoom-done-btn {
+            width: 100%;
+            margin-top: 15px;
+            padding: 12px;
+            background: #27ae60;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .zoom-done-btn:hover {
+            background: #229954;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .header h2 {
+                font-size: 1em;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .voice-toggle-container {
+                flex-direction: row;
+                gap: 8px;
+            }
+
+            .voice-toggle-label {
+                font-size: 0.7em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Zoom Overlay for Mobile View -->
+    <div class="zoom-overlay" id="zoomOverlay">
+        <div class="zoom-input-container">
+            <div class="zoom-input-header">
+                <span class="zoom-input-title" id="zoomTitle">Enter Text</span>
+                <button class="zoom-close-btn" onclick="closeZoomInput()">×</button>
+            </div>
+            <textarea class="zoom-input" id="zoomInput" placeholder="Type or speak here..."></textarea>
+            <button class="zoom-done-btn" onclick="closeZoomInput()">✓ Done</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>BRAKE POWER</h1>
+            <h2>Check of Goods Train</h2>
+            <h3>Raipur Division</h3>
+            <div class="header-content">
+                <div class="mobile-toggle-container">
+                    <span class="mobile-toggle-label">📱 Mobile View</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="mobileToggle" onchange="toggleMobileView()">
+                        <span class="slider"></span>
+                    </label>
+                </div>
+                <div class="voice-toggle-container">
+                    <span class="voice-toggle-label">🎤 Voice</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="voiceToggle" onchange="toggleVoiceTyping()">
+                        <span class="slider"></span>
+                    </label>
+                    <span class="voice-status" id="voiceStatus">OFF</span>
+                    <span class="voice-indicator" id="voiceIndicator">
+                        <span>🎤</span>
+                        <span class="listening-text">Listening</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-container">
+            <!-- Basic Information Section -->
+            <div class="info-section">
+                <div class="info-fields">
+                    <div class="info-field">
+                        <label for="formDate">Date:</label>
+                        <input type="date" id="formDate">
+                    </div>
+                    <div class="info-field">
+                        <label for="place">Place:</label>
+                        <input type="text" id="place">
+                    </div>
+                </div>
+                <div class="info-fields">
+                    <div class="info-field">
+                        <label for="time">Time:</label>
+                        <input type="text" id="time" placeholder="e.g., 11.10-12.15 HRS">
+                    </div>
+                    <div class="info-field">
+                        <label for="lineNo">Line No:</label>
+                        <input type="text" id="lineNo">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Train Particulars Section -->
+            <div class="info-section">
+                <h2>Train Particulars</h2>
+                <br>
+                <div class="info-fields">
+                    <div class="info-field">
+                        <label for="trainNo">Train No:</label>
+                        <input type="text" id="trainNo">
+                    </div>
+                    <div class="info-field">
+                        <label for="locoNo">Loco No:</label>
+                        <input type="text" id="locoNo">
+                    </div>
+                </div>
+                <div class="info-fields">
+                    <div class="info-field">
+                        <label for="load">Load:</label>
+                        <input type="text" id="load">
+                    </div>
+                    <div class="info-field">
+                        <label for="homeShed">Home Shed:</label>
+                        <input type="text" id="homeShed">
+                    </div>
+                </div>
+                <div class="info-fields">
+                    <div class="info-field">
+                        <label for="scheduleInspection">Schedule Inspection:</label>
+                        <input type="text" id="scheduleInspection">
+                    </div>
+                    <div class="info-field">
+                        <label for="bpcNo">BPC No:</label>
+                        <input type="text" id="bpcNo">
+                    </div>
+                </div>
+                <div class="info-fields">
+                    <div class="info-field">
+                        <label for="issueDate">Issue Date:</label>
+                        <input type="date" id="issueDate">
+                    </div>
+                    <div class="info-field">
+                        <label for="issueStation">Issue Station:</label>
+                        <input type="text" id="issueStation">
+                    </div>
+                </div>
+                <div class="info-fields">
+                    <div class="info-field">
+                        <label for="brakePowerPercent">Brake Power %:</label>
+                        <input type="text" id="brakePowerPercent">
+                    </div>
+                    <div class="info-field">
+                        <label for="rake">Rake:</label>
+                        <input type="text" id="rake">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Crew Particulars Section -->
+            <div class="info-section">
+                <h2>Crew Particulars</h2>
+                <div class="info-fields">
+                    <div class="info-field">
+                        <label for="lpName">LP Name:</label>
+                        <input type="text" id="lpName" placeholder="LOCO PILOT NAME">
+                    </div>
+                    <div class="info-field">
+                        <label for="alpName">ALP Name:</label>
+                        <input type="text" id="alpName" placeholder="ASSISTANT LOCO PILOT NAME">
+                    </div>
+                </div>
+                <div class="info-fields">
+                    <div class="info-field">
+                        <label for="tmName">TM (Train Manager / Guard):</label>
+                        <input type="text" id="tmName" placeholder="TRAIN MANAGER / GUARD NAME">
+                    </div>
+                    <div class="info-field">
+                        <label for="crewParticulars">Other Crew Details:</label>
+                        <input type="text" id="crewParticulars" placeholder="OTHER CREW">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Engine & Rake Details Section -->
+            <div class="info-section">
+                <h2>Engine &amp; Rake Details</h2>
+
+                <!--  Rake Integrity -->
+                <div class="info-fields">
+                    <div class="info-field">
+                        <label for="rakeIntegrity">i. Rake Integrity:</label>
+                        <select id="rakeIntegrity">
+                            <option value="">-- SELECT --</option>
+                            <option value="YES">YES</option>
+                            <option value="NO">NO</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Other Details -->
+                <div class="info-fields">
+                    <div class="info-field">
+                        <label for="bpInEngine">BP IN ENGINE (kg/cm&sup2;):</label>
+                        <input type="text" id="bpInEngine" placeholder="BP IN ENGINE">
+                    </div>
+                    <div class="info-field">
+                        <label for="bpInBV">BP IN BV (kg/cm&sup2;):</label>
+                        <input type="text" id="bpInBV" placeholder="BP IN BV">
+                    </div>
+                </div>
+                <div class="info-fields">
+                    <div class="info-field">
+                        <label for="fpInEngine">FP IN ENGINE (kg/cm&sup2;):</label>
+                        <input type="text" id="fpInEngine" placeholder="FP IN ENGINE">
+                    </div>
+                    <div class="info-field">
+                        <label for="fpInBV">FP IN BV (kg/cm&sup2;):</label>
+                        <input type="text" id="fpInBV" placeholder="FP IN BV">
+                    </div>
+                </div>
+                <div class="info-fields">
+                    <div class="info-field">
+                        <label for="eot">EOT:</label>
+                        <input type="text" id="eot" placeholder="END OF TRAIN">
+                    </div>
+                    <div class="info-field">
+                        <label for="arrival">ARRIVAL:</label>
+                        <input type="text" id="arrival" placeholder="ARRIVAL TIME / DETAILS">
+                    </div>
+                </div>
+
+                <!-- iii & iv Cylinders -->
+                <div class="info-fields">
+                    <div class="info-field">
+                        <label for="totalCylinders">Total No of Brake Cylinders:</label>
+                        <input type="text" id="totalCylinders" placeholder="TOTAL CYLINDERS">
+                    </div>
+                    <div class="info-field">
+                        <label for="operativeCylinders">Total No of Operative Cylinders:</label>
+                        <input type="text" id="operativeCylinders" placeholder="OPERATIVE CYLINDERS">
+                    </div>
+                </div>
+
+                <!-- % Brake Power -->
+                <div class="info-fields">
+                    <div class="info-field full-width">
+                        <label for="brakePowerCalc">% Brake Power:</label>
+                        <input type="text" id="brakePowerCalc" placeholder="% BRAKE POWER">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Safety Checklist Section -->
+            <div class="info-section">
+                <h2>Safety Checklist</h2>
+                <BR>
+                <style>
+                    .checklist-row {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        gap: 7px;
+                        padding: 10px 14px;
+                        margin-bottom: 8px;
+                        background: #f0f8ff;
+                        border-left: 4px solid #4a90e2;
+                        border-radius: 6px;
+                        flex-wrap: wrap;
+                    }
+                    label.q-label {
+                        flex: 1 1 60%;
+                        font-size: 12.5px;
+                        font-weight: bold;
+                        color: #2c3e50;
+                    }
+                    .yn-select {
+                        flex-shrink: 0;
+                        width: 100px;
+                        padding: 6px 10px;
+                        font-size: 13px;
+                        font-weight: bold;
+                        border: 2px solid #b3d9ff;
+                        border-radius: 5px;
+                        background: white;
+                        color: #2c3e50;
+                        cursor: pointer;
+                        transition: border-color 0.3s;
+                    }
+                    .yn-select:focus {
+                        outline: none;
+                        border-color: #4a90e2;
+                        box-shadow: 0 0 6px rgba(74,144,226,0.3);
+                    }
+                    .yn-select option[value="YES"] { color: #2c3e50; font-weight: bold; }
+                    .yn-select option[value="NO"]  { color: #2c3e50; font-weight: bold; }
+                </style>
+
+                <!-- 1 -->
+                <div class="checklist-row">
+                    <label class="q-label">1. Loose fitting / hanging parts which may endanger safe running of train:</label>
+                    <select id="looseFitting" class="yn-select">
+                        <option value="">SELECT</option>
+                        <option value="YES">YES</option>
+                        <option value="NO">NO</option>
+                    </select>
+                </div>
+
+                <!-- 2 -->
+                <div class="checklist-row">
+                    <label class="q-label">2. Doors of all wagons are closed and locked properly:</label>
+                    <select id="doorsClosed" class="yn-select">
+                        <option value="">SELECT</option>
+                        <option value="YES">YES</option>
+                        <option value="NO">NO</option>
+                    </select>
+                </div>
+
+                <!-- 3 -->
+                <div class="checklist-row">
+                    <label class="q-label">3. Empty load device handle is in proper position as required:</label>
+                    <select id="emptyLoadDevice" class="yn-select">
+                        <option value="">SELECT</option>
+                        <option value="YES">YES</option>
+                        <option value="NO">NO</option>
+                    </select>
+                </div>
+
+                <!-- 4 -->
+                <div class="checklist-row">
+                    <label class="q-label">4. Hand brake are in released condition:</label>
+                    <select id="handBrake" class="yn-select">
+                        <option value="">SELECT</option>
+                        <option value="YES">YES</option>
+                        <option value="NO">NO</option>
+                    </select>
+                </div>
+
+                <!-- 5 -->
+                <div class="checklist-row">
+                    <label class="q-label">5. Continuity of BP pressure:</label>
+                    <select id="bpContinuity" class="yn-select">
+                        <option value="">SELECT</option>
+                        <option value="YES">YES</option>
+                        <option value="NO">NO</option>
+                    </select>
+                </div>
+
+                <!--  -->
+                <div style="padding:10px 14px;background:#fff8e1;border-left:4px solid #f39c12;border-radius:6px;margin-bottom:8px;">
+                    <label for="abnormalities" style="font-weight:bold;font-size:12.5px;color:#2c3e50;display:block;margin-bottom:6px;">
+                         Any other abnormalities noticed and action taken:
+                    </label>
+                    <textarea id="abnormalities" rows="2" placeholder="DESCRIBE ANY ABNORMALITIES AND ACTION TAKEN..."></textarea>
+                </div>
+            </div>
+
+
+
+            <div class="remarks-section">
+                <label for="otherRemarks">Other Remarks if any:</label>
+                <textarea id="otherRemarks" rows="1" style="min-height:32px;overflow:hidden;resize:none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
+            </div>
+
+            <div class="info-fields">
+                <div class="info-field" style="text-align:center;">
+                    <label for="signature" style="display:block;text-align:center;">Upload Signature:</label>
+                    <input type="file" id="signature" accept="image/*" onchange="previewSignature(event)" style="display:block;margin:0 auto;">
+                    <div id="signaturePreview" style="margin-top: 10px; display: none; text-align:center;">
+                        <img id="signatureImg" style="max-width: 200px; max-height: 100px; border: 2px solid #4a90e2; border-radius: 5px;">
+                    </div>
+                </div>
+                <div class="info-field" style="text-align:center;">
+                    <label for="cliName" style="display:block;text-align:center;">CLI Name and HQ:</label>
+                    <select id="cliName" style="text-align:center;text-align-last:center;">
+                        <option value="">Select CLI Name and HQ</option>
+                        <option value="A K REDDY/CLI/BIA">A K REDDY/CLI/BIA</option>
+                      <option value="A.R.TARAM/CLI/BIA">A.R. TARAM/CLI/BIA</option>
+                                <option value="ABDUL MOIN KHAN/CLI/BIA">ABDUL MOIN KHAN/CLI/BIA</option>
+                                <option value="AKHILESH KUMAR/CLI/BIA">AKHILESH KUMAR/CLI/BIA</option>
+                                <option value="AMIT KUMAR BANKURE/CLI/BYT">AMIT KUMAR BANKURE/CLI/BYT</option>
+                                <option value="ANANT PRAKASH SHRIVASTAVA/CLI/BIA">ANANT PRAKASH SHRIVASTAVA/CLI/BIA</option>
+                                <option value="ANIL KUMAR/CLI/BIA">ANIL KUMAR/CLI/BIA</option>
+                                <option value="ANKIT RAM KANT/CLI/BIA">ANKIT RAM KANT/CLI/BIA</option>
+                                <option value="AVON KUMAR SAHU/CLI/R">AVON KUMAR SAHU/CLI/R</option>
+                                <option value="ASHISH WANJARI/CLI/BYT">ASHISH WANJARI/CLI/BYT</option>
+                                <option value="B B KUSHWAHA/CLI/BIA">B B KUSHWAHA/CLI/BIA</option>
+                                <option value="B K HARMUKH/CLI/BIA">B K HARMUKH/CLI/BIA</option>
+                                <option value="B. K. SAHA/CLI/BIA">B. K. SAHA/CLI/BIA</option>
+                                <option value="B.K.SONI/CLI/BIA">B.K.SONI/CLI/BIA</option>
+                                <option value="BHARAT SINGH ATBHAIYYA/CLI/R">BHARAT SINGH ATBHAIYYA/CLI/R</option>
+                                <option value="BHOLI CHAUDHARY/CLI/R">BHOLI CHAUDHARY/CLI/R</option>
+                                <option value="BIKRAMJIT KANRAR/CLI/BIA">BIKRAMJIT KANRAR/CLI/BIA</option>
+                                <option value="BINOD KUMAR RAM/CLI/R">BINOD KUMAR RAM/CLI/R</option>
+                                <option value="CLI NAME/CLI/BIA">CLI NAME/CLI/BIA</option>
+                                <option value="DEEPANNITA PUNTAMBEKAR/CLI/BIA">DEEPANNITA PUNTAMBEKAR/CLI/BIA</option>
+                                <option value="DILLI RAO/CLI/BYT">DILLI RAO/CLI/BYT</option>
+                                <option value="G. C. BISWAS/CLI/R">G. C. BISWAS/CLI/R</option>
+                                <option value="G. V. R. K. MADHU/CLI/BIA">G. V. R. K. MADHU/CLI/BIA</option>
+                                <option value="GIRDHARI LAL/CLI/R">GIRDHARI LAL/CLI/R</option>
+                                <option value="JAISHANKAR SHARMA/CLI/BIA">JAISHANKAR SHARMA/CLI/BIA</option>
+                                <option value="JITENDRA KUMAR MISHRA/CLI/BYT">JITENDRA KUMAR MISHRA/CLI/BYT</option>
+                                <option value="K P LAHARE/CLI/R">K P LAHRE/CLI/BIA</option>
+                                <option value="K P HIRWANI/CLI/BYT">K P HIRWANI/CLI/R</option>
+                                <option value="K. K. SAHU/CLI/BIA">K. K. SAHU/CLI/BIA</option>
+                                <option value="KHUSAL SINGH/CLI/DRZ">KHUSAL SINGH/CLI/DRZ</option>
+                                <option value="MAHESHWAR/CLI/BIA">MAHESHWAR/CLI/BIA</option>
+                                <option value="MANOJ KUMAR SAO/CLI/R">MANOJ KUMAR SAO/CLI/R</option>
+                                <option value="MANSUKH LAL CHANDRAKAR/CLI/R">MANSUKH LAL CHANDRAKAR/CLI/R</option>
+                                <option value="MOHIT KUMAR SWARNKAR/CLI/BIA">MOHIT KUMAR SWARNKAR/CLI/BIA</option>
+                                <option value="N. R. KARPAL/CLI/BIA">N. R. KARPAL/CLI/BIA</option>
+                                <option value="N.K. BHOI/CLI/R">N.K. BHOI/CLI/R</option>
+                                <option value="NITIN KUKDE/CLI/BYT">NITIN KUKDE/CLI/BYT</option>
+                                <option value="NIRMAL KUMAR/CLI/BYT">NIRMAL KUMAR/CLI/BYT</option>
+                                <option value="P.K. PATEL/CLI/BIA">P.K. PATEL/CLI/BIA</option>
+                                <option value="PANKAJ KUMAR SINGH/CLI/BIA">PANKAJ KUMAR SINGH/CLI/BIA</option>
+                                <option value="PAWAN KUMAR SINGH/CLI/BIA">PAWAN KUMAR SINGH/CLI/BIA
+                                <option value="PURAN LAL PATEL/CLI/BYT">A.R. TARAM/CLI/BIA</option>
+                                <option value="RAJENDRA KUMAR/CLI/BIA">RAJENDRA KUMAR/CLI/BIA</option>
+                                <option value="PALAK RAM ALENDRA/CLI/DRZ">PALAK RAM ALENDRA/CLI/DRZ</option>
+                                <option value="RAJESH KUMAR DESHMUKH/CLI/R">RAJESH KUMAR DESHMUKH/CLI/R</option>
+                                <option value="RAJNEESH BENERJEE/CLI/BIA">RAJNEESH BENERJEE/CLI/BIA</option>
+                                <option value="RANJEET SINGH/CLI/BYT">RANJEET SINGH/CLI/BYT</option>
+                                <option value="RAKESH KUMAR KOSTA/CLI/DRZ">RAKESH KUMAR KOSTA/CLI/DRZ</option>
+                                <option value="RAJESH KUMAR DESHMUKH/CLI/R/CLI/DRZ">RAJESH KUMAR DESHMUKH/CLI/R</option>
+                                <option value="S K GAUTAM/CLI/BIA">S K GAUTAM/CLI/BIA</option>
+                                <option value="S S HUSSAIN/CLI/BIA">S S HUSSAIN/CLI/BIA</option>
+                                <option value="S. C. RAI/CLI/BIA">S. C. RAI/CLI/BIA</option>
+                                <option value="S. K. SINGH/CLI/BIA">S. K. SINGH/CLI/BIA</option>
+                                <option value="S. L. SONI/CLI/R">S. L. SONI/CLI/R</option>
+                                <option value="SANJAY KUMAR ROY/CLI/BIA">SANJAY KUMAR ROY/CLI/BIA</option>
+                                <option value="SANJAY SINGH/CLI/BYT">SANJAY SINGH/CLI/BYT</option>
+                                <option value="SANJEEV KUMAR SHARMA/CLI/BIA">SANJEEV KUMAR SHARMA/CLI/BIA</option>
+                                <option value="SANTOSH KUAMAR PATKAR/CLI/BIA">SANTOSH KUAMAR PATKAR/CLI/BIA</option>
+                                <option value="SHAILENDRA SINGH/CLI/BIA">SHAILENDRA SINGH/CLI/BIA</option>
+                                <option value="SUNDEEP KUMAR SHARMA/CLI/BIA">SUNDEEP KUMAR SHARMA/CLI/BIA</option>
+                                <option value="SUNIL KUMAR DEWANGAN/CLI/BIA">SUNIL KUMAR DEWANGAN/CLI/BIA</option>
+                                <option value="SANAT KUMAR SAHU/CLI/DRZ">SANAT KUMAR SAHU/CLI/DRZ</option>
+                                <option value="TEST ID/CLI/BIA">TEST ID/CLI/BIA</option>
+                                <option value="V.K. BHAGAT/CLI/R">V.K. BHAGAT/CLI/R</option>
+                                <option value="VIJAY KUMAR ARYA/CLI/BIA">VIJAY KUMAR ARYA/CLI/BIA</option>
+                                <option value="VIKAS SHENDE/CLI/BIA">VIKAS SHENDE/CLI/BIA</option>
+                                <option value="VINAY KUMAR VINCHURE/CLI/BIA">VINAY KUMAR VINCHURE/CLI/BIA</option>
+                                <option value="VINAY PANTAWANE/CLI/BIA">VINAY PANTAWANE/CLI/BIA</option>
+                                <option value="Y. RAMU/CLI/BIA">Y. RAMU/CLI/BIA</option>
+                                <option value="YOGESH KUMAR MIHAULIA/CLI/BIA">YOGESH KUMAR MIHAULIA/CLI/BIA</option>
+                                <option value="OTHERS">OTHERS</option>
+                        <option value="OTHERS">OTHERS</option>
+                    </select>
+                </div>
+            </div>
+
+            <input type="file" id="draftFileInput" accept=".json" onchange="handleDraftUpload(event)">
+
+            <div class="button-group">
+                <button class="save-draft-btn" onclick="saveDraft()">Save Draft</button>
+                <button class="upload-draft-btn" onclick="document.getElementById('draftFileInput').click()">Upload Draft</button>
+                <button class="submit-btn" onclick="submitForm()">Submit</button>
+                <button class="pdf-btn" onclick="generatePDF()">Generate PDF</button>
+            </div>
+
+            <div id="message" class="message"></div>
+        </div>
+    </div>
+
+    <script>
+        function previewSignature(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('signaturePreview');
+                    const img = document.getElementById('signatureImg');
+                    img.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function submitForm() {
+            const data = {
+                date: document.getElementById('formDate').value,
+                place: document.getElementById('place').value,
+                time: document.getElementById('time').value,
+                lineNo: document.getElementById('lineNo').value,
+                trainNo: document.getElementById('trainNo').value,
+                locoNo: document.getElementById('locoNo').value,
+                load: document.getElementById('load').value,
+                homeShed: document.getElementById('homeShed').value,
+                scheduleInspection: document.getElementById('scheduleInspection').value,
+                bpcNo: document.getElementById('bpcNo').value,
+                issueDate: document.getElementById('issueDate').value,
+                issueStation: document.getElementById('issueStation').value,
+                brakePowerPercent: document.getElementById('brakePowerPercent').value,
+                rake: document.getElementById('rake').value,
+                crewParticulars: document.getElementById('crewParticulars').value,
+                otherRemarks: document.getElementById('otherRemarks').value,
+                cliName: document.getElementById('cliName').value
+            };
+
+            console.log('Form Data:', data);
+            showMessage('Form submitted successfully! Check console for data.', 'success');
+
+            // You can send this data to a server here
+            // Example: fetch('/api/submit', { method: 'POST', body: JSON.stringify(data) })
+        }
+
+        function generatePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const pageWidth = doc.internal.pageSize.getWidth();
+            const marginL = 14, marginR = pageWidth - 14;
+            const colMid = pageWidth / 2;
+
+            // ── helper: draw a section box with blue header ──────────────────
+            function drawSection(title, yStart, sectionHeight) {
+                // Blue filled header bar
+                doc.setFillColor(30, 90, 160);
+                doc.roundedRect(marginL, yStart, marginR - marginL, 6, 1, 1, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFontSize(9);
+                doc.setFont(undefined, 'bold');
+                doc.text(title.toUpperCase(), marginL + 3, yStart + 4.5);
+                // Blue border around section body
+                doc.setDrawColor(30, 90, 160);
+                doc.setLineWidth(0.4);
+                doc.rect(marginL, yStart + 6, marginR - marginL, sectionHeight, 'S');
+                // Reset colours
+                doc.setTextColor(0, 0, 0);
+                doc.setFontSize(9);
+                doc.setFont(undefined, 'normal');
+            }
+
+            // ── helper: two-column label:value row ───────────────────────────
+            function row2(doc, label1, val1, label2, val2, y, lx, rx) {
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(60, 60, 60);
+                doc.text(label1, lx, y);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
+                doc.text(String(val1), lx + 32, y);
+                if (label2 !== null) {
+                    doc.setFont(undefined, 'bold');
+                    doc.setTextColor(60, 60, 60);
+                    doc.text(label2, rx, y);
+                    doc.setFont(undefined, 'normal');
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(String(val2), rx + 32, y);
+                }
+            }
+
+            // ── helper: single full-width label:value ────────────────────────
+            function row1(doc, label, val, y, lx) {
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(60, 60, 60);
+                doc.text(label, lx, y);
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
+                doc.text(String(val), lx + 38, y);
+            }
+
+            // ── helper: check page overflow ──────────────────────────────────
+            function checkPage(y, needed) {
+                if (y + needed > 280) {
+                    doc.addPage();
+                    return 15;
+                }
+                return y;
+            }
+
+            // ═══════════════════════════════════════════════════════════════
+            // TITLE
+            // ═══════════════════════════════════════════════════════════════
+            // Navy header block (same colour as HTML: #1a237e → #283593)
+            doc.setFillColor(26, 35, 126);
+            doc.rect(0, 0, pageWidth, 30, 'F');
+            // Yellow bottom border (same as HTML: #FFD700)
+            doc.setDrawColor(255, 215, 0);
+            doc.setLineWidth(1.5);
+            doc.line(0, 30, pageWidth, 30);
+            // White title "BRAKE POWER"
+            doc.setFontSize(16);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(255, 255, 255);
+            doc.text('BRAKE POWER', pageWidth / 2, 11, { align: 'center' });
+            // Yellow subtitle "CHECK OF GOODS TRAIN" (#FFD700)
+            doc.setFontSize(9);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(255, 215, 0);
+            doc.text('CHECK OF GOODS TRAIN', pageWidth / 2, 19, { align: 'center' });
+            // White sub-heading "RAIPUR DIVISION"
+            doc.setFontSize(8);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(255, 255, 255);
+            doc.text('RAIPUR DIVISION', pageWidth / 2, 26, { align: 'center' });
+
+            // ═══════════════════════════════════════════════════════════════
+            // Collect all values
+            // ═══════════════════════════════════════════════════════════════
+            const formDate   = document.getElementById('formDate').value || '';
+            const place      = document.getElementById('place').value || '';
+            const time       = document.getElementById('time').value || '';
+            const lineNo     = document.getElementById('lineNo').value || '';
+            const trainNo    = document.getElementById('trainNo').value || '';
+            const locoNo     = document.getElementById('locoNo').value || '';
+            const load       = document.getElementById('load').value || '';
+            const homeShed   = document.getElementById('homeShed').value || '';
+            const scheduleInspection = document.getElementById('scheduleInspection').value || '';
+            const bpcNo      = document.getElementById('bpcNo').value || '';
+            const issueDate  = document.getElementById('issueDate').value || '';
+            const issueStation = document.getElementById('issueStation').value || '';
+            const brakePowerPercent = document.getElementById('brakePowerPercent').value || '';
+            const rake       = document.getElementById('rake').value || '';
+            const lpName     = document.getElementById('lpName').value || '';
+            const alpName    = document.getElementById('alpName').value || '';
+            const tmName     = document.getElementById('tmName').value || '';
+            const crewOther  = document.getElementById('crewParticulars').value || '';
+            const rakeInteg  = document.getElementById('rakeIntegrity').value || '';
+            const bpInEngine = document.getElementById('bpInEngine').value || '';
+            const bpInBV     = document.getElementById('bpInBV').value || '';
+            const fpInEngine = document.getElementById('fpInEngine').value || '';
+            const fpInBV     = document.getElementById('fpInBV').value || '';
+            const eot        = document.getElementById('eot').value || '';
+            const arrival    = document.getElementById('arrival').value || '';
+            const totalCyl   = document.getElementById('totalCylinders').value || '';
+            const opCyl      = document.getElementById('operativeCylinders').value || '';
+            const bpCalc     = document.getElementById('brakePowerCalc').value || '';
+            const looseFitting   = document.getElementById('looseFitting').value || '';
+            const doorsClosed    = document.getElementById('doorsClosed').value || '';
+            const emptyLoadDevice= document.getElementById('emptyLoadDevice').value || '';
+            const handBrake      = document.getElementById('handBrake').value || '';
+            const bpContinuity   = document.getElementById('bpContinuity').value || '';
+            const abnormalities  = document.getElementById('abnormalities').value || '';
+            const observation    = '';
+            const otherRemarks   = document.getElementById('otherRemarks').value || '';
+            const cliName        = document.getElementById('cliName').value || '';
+            const signatureFile  = document.getElementById('signature').files[0];
+
+            const lx = marginL + 3;   // left column text start
+            const rx = colMid + 3;    // right column text start
+            const lineH = 5;          // line height
+            let y = 34;
+
+            // ═══════════════════════════════════════════════════════════════
+            // SECTION 1 — Basic Info
+            // ═══════════════════════════════════════════════════════════════
+            const s1H = lineH * 2 + 4;
+            drawSection('Basic Information', y, s1H);
+            y += 9;
+            row2(doc, 'Date :', formDate, 'Place :', place, y, lx, rx);  y += lineH;
+            row2(doc, 'Time :', time,     'Line No :', lineNo,  y, lx, rx); y += lineH;
+            y += 2;
+
+            // ═══════════════════════════════════════════════════════════════
+            // SECTION 2 — Train Particulars
+            // ═══════════════════════════════════════════════════════════════
+            y = checkPage(y, 60);
+            const s2H = lineH * 5 + 4;
+            drawSection('Train Particulars', y, s2H);
+            y += 9;
+            row2(doc, 'Train No :', trainNo, 'Loco No :', locoNo, y, lx, rx); y += lineH;
+            row2(doc, 'Load :', load, 'Home Shed :', homeShed, y, lx, rx); y += lineH;
+            row2(doc, 'Schedule Insp. :', scheduleInspection, 'BPC No :', bpcNo, y, lx, rx); y += lineH;
+            row2(doc, 'Issue Date :', issueDate, 'Issue Station :', issueStation, y, lx, rx); y += lineH;
+            row2(doc, 'Brake Power % :', brakePowerPercent, 'Rake :', rake, y, lx, rx); y += lineH;
+            y += 2;
+
+            // ═══════════════════════════════════════════════════════════════
+            // SECTION 3 — Crew Particulars
+            // ═══════════════════════════════════════════════════════════════
+            y = checkPage(y, 40);
+            const s3H = lineH * (crewOther ? 3 : 2) + 6;
+            drawSection('Crew Particulars', y, s3H);
+            y += 9;
+            row2(doc, 'LP Name :', lpName, 'ALP Name :', alpName, y, lx, rx); y += lineH;
+            row2(doc, 'TM :', tmName, crewOther ? 'Other :' : null, crewOther, y, lx, rx); y += lineH;
+            if (crewOther) y += lineH;
+            y += 2;
+
+            // ═══════════════════════════════════════════════════════════════
+            // SECTION 4 — Engine & Rake Details
+            // ═══════════════════════════════════════════════════════════════
+            y = checkPage(y, 65);
+            const s4H = lineH * 8 + 6;
+            drawSection('Engine & Rake Details', y, s4H);
+            y += 9;
+
+            // Rake Integrity — full width
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(60, 60, 60);
+            doc.text('i.  Rake Integrity :', lx, y);
+            doc.setFont(undefined, 'bold');
+            const riColor = rakeInteg === 'YES' ? [30,90,160] : rakeInteg === 'NO' ? [192,57,43] : [80,80,80];
+            doc.setTextColor(...riColor);
+            doc.text(rakeInteg || '---', lx + 38, y);
+            doc.setTextColor(0, 0, 0);
+            y += lineH;
+
+            // Separator line
+            doc.setDrawColor(200, 220, 240);
+            doc.setLineWidth(0.2);
+            doc.line(lx, y - 1, marginR - 3, y - 1);
+
+            // BP / FP grid — 2 cols x 2 rows
+            row2(doc, 'BP IN ENGINE :', bpInEngine, 'BP IN BV :', bpInBV, y, lx, rx); y += lineH;
+            row2(doc, 'FP IN ENGINE :', fpInEngine, 'FP IN BV :', fpInBV, y, lx, rx); y += lineH;
+
+            // EOT / Arrival
+            row2(doc, 'EOT :', eot, 'ARRIVAL :', arrival, y, lx, rx); y += lineH;
+
+            // Cylinders
+            doc.setFont(undefined, 'bold'); doc.setTextColor(60, 60, 60);
+            doc.text('Total No of Brake Cylinders :', lx, y);
+            doc.setFont(undefined, 'normal'); doc.setTextColor(0, 0, 0);
+            doc.text(String(totalCyl), lx + 55, y);
+            doc.setFont(undefined, 'bold'); doc.setTextColor(60, 60, 60);
+            doc.text('Total No of Operative Cylinders :', rx, y);
+            doc.setFont(undefined, 'normal'); doc.setTextColor(0, 0, 0);
+            doc.text(String(opCyl), rx + 58, y);
+            y += lineH;
+
+            // % Brake Power — full width
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(60, 60, 60);
+            doc.text('% Brake Power :', lx, y);
+            doc.setFont(undefined, 'normal');
+            doc.setTextColor(0, 0, 0);
+            doc.text(bpCalc, lx + 45, y);
+            y += lineH;
+            y += 2;
+
+            // ═══════════════════════════════════════════════════════════════
+            // SECTION 5 — Safety Checklist
+            // ═══════════════════════════════════════════════════════════════
+            y = checkPage(y, 70);
+            const abnLines = abnormalities ? doc.splitTextToSize(abnormalities, 130).length : 0;
+            const s5H = lineH * 5 + (abnLines ? lineH * (abnLines + 1) : lineH) + 10;
+            drawSection('Safety Checklist', y, s5H);
+            y += 9;
+
+            const checklist = [
+                ['1.', 'Loose fitting / hanging parts which may endanger safe running of train', looseFitting],
+                ['2.', 'Doors of all wagons are closed and locked properly', doorsClosed],
+                ['3.', 'Empty load device handle is in proper position as required', emptyLoadDevice],
+                ['4.', 'Hand brake are in released condition', handBrake],
+                ['5.', 'Continuity of BP pressure', bpContinuity],
+            ];
+
+            checklist.forEach(([num, question, answer]) => {
+                // Number
+                doc.setFont(undefined, 'bold');
+                doc.setTextColor(30, 90, 160);
+                doc.text(num, lx, y);
+                // Question text
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(30, 30, 30);
+                doc.text(question, lx + 6, y);
+                // Answer badge
+                const ansColor = answer === 'YES' ? [30,90,160] : answer === 'NO' ? [192,57,43] : [120,120,120];
+                doc.setFillColor(...ansColor);
+                const ansText = answer || '---';
+                const ansW = 12;
+                doc.roundedRect(marginR - ansW - 5, y - 4, ansW, 5, 1, 1, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFont(undefined, 'bold');
+                doc.setFontSize(8);
+                doc.text(ansText, marginR - ansW - 5 + ansW / 2, y - 0.5, { align: 'center' });
+                doc.setFontSize(9);
+                doc.setTextColor(0, 0, 0);
+                y += lineH;
+            });
+
+            // Item  — Abnormalities
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(30, 90, 160);
+            doc.text('8.', lx, y);
+            doc.setFont(undefined, 'bold');
+            doc.setTextColor(30, 30, 30);
+            doc.text('Any other abnormalities noticed and action taken :', lx + 6, y);
+            y += lineH;
+            if (abnormalities) {
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
+                const splitAbn = doc.splitTextToSize(abnormalities, 170);
+                doc.text(splitAbn, lx + 6, y);
+                y += splitAbn.length * lineH;
+            }
+            y += 2;
+
+            // ═══════════════════════════════════════════════════════════════
+            // SECTION 7 — Other Remarks
+            // ═══════════════════════════════════════════════════════════════
+            if (otherRemarks) {
+                y = checkPage(y, 25);
+                const remLines = doc.splitTextToSize(otherRemarks, 170).length;
+                drawSection('Other Remarks', y, lineH * remLines + 8);
+                y += 12;
+                doc.setFont(undefined, 'normal');
+                doc.setTextColor(0, 0, 0);
+                const splitRem = doc.splitTextToSize(otherRemarks, 170);
+                doc.text(splitRem, lx, y);
+                y += splitRem.length * lineH + 4;
+            }
+
+            // ═══════════════════════════════════════════════════════════════
+            // SIGNATURE & CLI NAME
+            // ═══════════════════════════════════════════════════════════════
+            // ── Fixed bottom zone on PAGE 1 for Signature + CLI ──────────
+            // Fixed bottom zone on PAGE 1 for Signature + CLI (right-aligned)
+            const footerY = 275; // fixed Y near bottom of A4 (297mm total)
+
+            function finalizePDF() {
+                const timestamp = new Date().toISOString().split('T')[0];
+                doc.save('Brake_Power_Check_' + timestamp + '.pdf');
+                showMessage('PDF generated and downloaded successfully!', 'success');
+            }
+
+            if (signatureFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Signature label + image on right side
+                    doc.setFont(undefined, 'bold');
+                    doc.setFontSize(9);
+                    doc.setTextColor(60, 60, 60);
+                    doc.text('Signature:', marginR - 54, footerY - 20);
+                    doc.addImage(e.target.result, 'PNG', marginR - 54, footerY - 18, 40, 15);
+                    // CLI name below signature image, right-aligned
+                    if (cliName) {
+                        doc.setFont(undefined, 'bold');
+                        doc.setFontSize(9);
+                        doc.setTextColor(0, 51, 102);
+                        doc.text(cliName, marginR, footerY + 1, { align: 'right' });
+                    }
+                    finalizePDF();
+                };
+                reader.readAsDataURL(signatureFile);
+            } else {
+                // No signature — show CLI name right-aligned at footer
+                if (cliName) {
+                    doc.setFont(undefined, 'bold');
+                    doc.setFontSize(9);
+                    doc.setTextColor(0, 51, 102);
+                    doc.text(cliName, marginR, footerY, { align: 'right' });
+                }
+                finalizePDF();
+            }
+        }
+
+                function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.textContent = text;
+            messageDiv.className = `message ${type}`;
+            messageDiv.style.display = 'block';
+
+            setTimeout(() => {
+                messageDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function saveDraft() {
+            const draftData = {
+                date: document.getElementById('formDate').value || '',
+                place: document.getElementById('place').value || '',
+                time: document.getElementById('time').value || '',
+                lineNo: document.getElementById('lineNo').value || '',
+                trainNo: document.getElementById('trainNo').value || '',
+                locoNo: document.getElementById('locoNo').value || '',
+                load: document.getElementById('load').value || '',
+                homeShed: document.getElementById('homeShed').value || '',
+                scheduleInspection: document.getElementById('scheduleInspection').value || '',
+                bpcNo: document.getElementById('bpcNo').value || '',
+                issueDate: document.getElementById('issueDate').value || '',
+                issueStation: document.getElementById('issueStation').value || '',
+                brakePowerPercent: document.getElementById('brakePowerPercent').value || '',
+                rake: document.getElementById('rake').value || '',
+                lpName: document.getElementById('lpName').value || '',
+                alpName: document.getElementById('alpName').value || '',
+                tmName: document.getElementById('tmName').value || '',
+                crewParticulars: document.getElementById('crewParticulars').value || '',
+                rakeIntegrity: document.getElementById('rakeIntegrity').value || '',
+                bpInEngine: document.getElementById('bpInEngine').value || '',
+                bpInBV: document.getElementById('bpInBV').value || '',
+                fpInEngine: document.getElementById('fpInEngine').value || '',
+                fpInBV: document.getElementById('fpInBV').value || '',
+                eot: document.getElementById('eot').value || '',
+                arrival: document.getElementById('arrival').value || '',
+                totalCylinders: document.getElementById('totalCylinders').value || '',
+                operativeCylinders: document.getElementById('operativeCylinders').value || '',
+                brakePowerCalc: document.getElementById('brakePowerCalc').value || '',
+                looseFitting: document.getElementById('looseFitting').value || '',
+                doorsClosed: document.getElementById('doorsClosed').value || '',
+                emptyLoadDevice: document.getElementById('emptyLoadDevice').value || '',
+                handBrake: document.getElementById('handBrake').value || '',
+                bpContinuity: document.getElementById('bpContinuity').value || '',
+                abnormalities: document.getElementById('abnormalities').value || '',
+                otherRemarks: document.getElementById('otherRemarks').value || '',
+                cliName: document.getElementById('cliName').value || ''
+            };
+
+            // Convert to JSON and download
+            const jsonString = JSON.stringify(draftData, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            const timestamp = new Date().toISOString().split('T')[0];
+            a.download = `Brake_Power_Draft_${timestamp}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showMessage('Draft saved successfully!', 'success');
+        }
+
+        function handleDraftUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const draftData = JSON.parse(e.target.result);
+
+                    // Restore data
+                    document.getElementById('formDate').value = draftData.date || '';
+                    document.getElementById('place').value = draftData.place || '';
+                    document.getElementById('time').value = draftData.time || '';
+                    document.getElementById('lineNo').value = draftData.lineNo || '';
+                    document.getElementById('trainNo').value = draftData.trainNo || '';
+                    document.getElementById('locoNo').value = draftData.locoNo || '';
+                    document.getElementById('load').value = draftData.load || '';
+                    document.getElementById('homeShed').value = draftData.homeShed || '';
+                    document.getElementById('scheduleInspection').value = draftData.scheduleInspection || '';
+                    document.getElementById('bpcNo').value = draftData.bpcNo || '';
+                    document.getElementById('issueDate').value = draftData.issueDate || '';
+                    document.getElementById('issueStation').value = draftData.issueStation || '';
+                    document.getElementById('brakePowerPercent').value = draftData.brakePowerPercent || '';
+                    document.getElementById('rake').value = draftData.rake || '';
+                    document.getElementById('lpName').value = draftData.lpName || '';
+                    document.getElementById('alpName').value = draftData.alpName || '';
+                    document.getElementById('tmName').value = draftData.tmName || '';
+                    document.getElementById('crewParticulars').value = draftData.crewParticulars || '';
+                    document.getElementById('rakeIntegrity').value = draftData.rakeIntegrity || '';
+                    document.getElementById('bpInEngine').value = draftData.bpInEngine || '';
+                    document.getElementById('bpInBV').value = draftData.bpInBV || '';
+                    document.getElementById('fpInEngine').value = draftData.fpInEngine || '';
+                    document.getElementById('fpInBV').value = draftData.fpInBV || '';
+                    document.getElementById('eot').value = draftData.eot || '';
+                    document.getElementById('arrival').value = draftData.arrival || '';
+                    document.getElementById('totalCylinders').value = draftData.totalCylinders || '';
+                    document.getElementById('operativeCylinders').value = draftData.operativeCylinders || '';
+                    document.getElementById('brakePowerCalc').value = draftData.brakePowerCalc || '';
+                    document.getElementById('abnormalities').value = draftData.abnormalities || '';
+                    ['looseFitting','doorsClosed','emptyLoadDevice','handBrake','bpContinuity'].forEach(id => {
+                        const el = document.getElementById(id);
+                        if (el && draftData[id]) el.value = draftData[id];
+                    });
+                    document.getElementById('otherRemarks').value = draftData.otherRemarks || '';
+                    document.getElementById('cliName').value = draftData.cliName || '';
+
+                    autoResizeTextarea(document.getElementById('crewParticulars'));
+                    autoResizeTextarea(document.getElementById('observation'));
+                    autoResizeTextarea(document.getElementById('otherRemarks'));
+
+                    showMessage('Draft uploaded successfully!', 'success');
+                } catch (error) {
+                    showMessage('Error loading draft file. Please check the file format.', 'error');
+                    console.error('Draft upload error:', error);
+                }
+            };
+            reader.readAsText(file);
+
+            // Reset file input so the same file can be uploaded again
+            event.target.value = '';
+        }
+
+        // Voice Typing Functionality
+        let recognition = null;
+        let voiceEnabled = false;
+        let currentInput = null;
+
+        function initVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                recognition.continuous = true;
+                recognition.interimResults = true;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = function() {
+                    // Voice recognition started - indicator managed by toggle state
+                };
+
+                recognition.onend = function() {
+                    // Voice recognition ended - indicator managed by toggle state
+                };
+
+                recognition.onresult = function(event) {
+                    if (!currentInput) return;
+
+                    let interimTranscript = '';
+                    let finalTranscript = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; i++) {
+                        const transcript = event.results[i][0].transcript;
+                        if (event.results[i].isFinal) {
+                            finalTranscript += transcript + ' ';
+                        } else {
+                            interimTranscript += transcript;
+                        }
+                    }
+
+                    if (finalTranscript) {
+                        const currentValue = currentInput.value;
+                        const cursorPos = currentInput.selectionStart;
+                        const textBefore = currentValue.substring(0, cursorPos);
+                        const textAfter = currentValue.substring(cursorPos);
+
+                        currentInput.value = textBefore + finalTranscript.toUpperCase() + textAfter;
+
+                        // Move cursor to end of inserted text
+                        const newCursorPos = textBefore.length + finalTranscript.length;
+                        currentInput.setSelectionRange(newCursorPos, newCursorPos);
+                    }
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Speech recognition error:', event.error);
+                    if (event.error === 'no-speech') {
+                        // Ignore no-speech errors
+                        return;
+                    }
+                    if (event.error === 'not-allowed') {
+                        showMessage('Microphone access denied. Please allow microphone access in your browser settings.', 'error');
+                        document.getElementById('voiceToggle').checked = false;
+                        toggleVoiceTyping();
+                    }
+                };
+
+                return true;
+            } else {
+                showMessage('Voice recognition is not supported in your browser. Please use Chrome or Edge.', 'error');
+                return false;
+            }
+        }
+
+        async function toggleVoiceTyping() {
+            const toggle = document.getElementById('voiceToggle');
+            const status = document.getElementById('voiceStatus');
+
+            voiceEnabled = toggle.checked;
+
+            if (voiceEnabled) {
+                // Request microphone permission
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    // Stop the stream immediately after getting permission
+                    stream.getTracks().forEach(track => track.stop());
+
+                    if (!recognition) {
+                        if (!initVoiceRecognition()) {
+                            toggle.checked = false;
+                            return;
+                        }
+                    }
+
+                    status.textContent = 'ON';
+                    status.style.color = '#2ecc71';
+
+                    // Show listening indicator
+                    document.getElementById('voiceIndicator').classList.add('listening');
+
+                    try {
+                        recognition.start();
+                        showMessage('Voice typing enabled! Click on any text field to start dictating.', 'success');
+                        setupVoiceInputs();
+                    } catch (e) {
+                        console.log('Recognition already started');
+                    }
+                } catch (error) {
+                    console.error('Microphone permission denied:', error);
+                    showMessage('Microphone permission denied. Please allow microphone access to use voice typing.', 'error');
+                    toggle.checked = false;
+                    voiceEnabled = false;
+                }
+            } else {
+                status.textContent = 'OFF';
+                status.style.color = 'white';
+
+                if (recognition) {
+                    recognition.stop();
+                }
+
+                document.getElementById('voiceIndicator').classList.remove('listening');
+                showMessage('Voice typing disabled.', 'success');
+                removeVoiceInputs();
+            }
+        }
+
+        function setupVoiceInputs() {
+            const inputs = document.querySelectorAll('input[type="text"], textarea');
+
+            inputs.forEach(input => {
+                input.addEventListener('focus', handleInputFocus);
+                input.addEventListener('blur', handleInputBlur);
+            });
+        }
+
+        function removeVoiceInputs() {
+            const inputs = document.querySelectorAll('input[type="text"], textarea');
+
+            inputs.forEach(input => {
+                input.removeEventListener('focus', handleInputFocus);
+                input.removeEventListener('blur', handleInputBlur);
+            });
+
+            currentInput = null;
+        }
+
+        let originalInputElement = null;
+
+        function handleInputFocus(event) {
+            // Show zoom overlay in mobile view
+            if (document.body.classList.contains('mobile-view')) {
+                const target = event.target;
+                openZoomInput(target);
+                return;
+            }
+
+            if (voiceEnabled) {
+                currentInput = event.target;
+                currentInput.style.borderColor = '#e74c3c';
+                currentInput.style.boxShadow = '0 0 10px rgba(231, 76, 60, 0.3)';
+            }
+        }
+
+        function handleInputBlur(event) {
+            if (voiceEnabled && event.target === currentInput) {
+                event.target.style.borderColor = '#b3d9ff';
+                event.target.style.boxShadow = 'none';
+            }
+        }
+
+        function openZoomInput(inputElement) {
+            originalInputElement = inputElement;
+            const zoomOverlay = document.getElementById('zoomOverlay');
+            const zoomInput = document.getElementById('zoomInput');
+            const zoomTitle = document.getElementById('zoomTitle');
+
+            // Get the field label or placeholder
+            const label = inputElement.placeholder || inputElement.getAttribute('aria-label') || 'Enter Text';
+            zoomTitle.textContent = label;
+
+            // Set current value
+            zoomInput.value = inputElement.value;
+
+            // Show overlay
+            zoomOverlay.classList.add('active');
+
+            // Focus on zoom input
+            setTimeout(() => {
+                zoomInput.focus();
+            }, 100);
+
+            // Prevent original input from focusing
+            inputElement.blur();
+        }
+
+        function closeZoomInput() {
+            const zoomOverlay = document.getElementById('zoomOverlay');
+            const zoomInput = document.getElementById('zoomInput');
+
+            if (originalInputElement) {
+                // Transfer value back to original input
+                originalInputElement.value = zoomInput.value;
+            }
+
+            // Hide overlay
+            zoomOverlay.classList.remove('active');
+
+            // Clear zoom input
+            zoomInput.value = '';
+            originalInputElement = null;
+        }
+
+        // Mobile View Toggle
+        function toggleMobileView() {
+            const toggle = document.getElementById('mobileToggle');
+            if (toggle.checked) {
+                document.body.classList.add('mobile-view');
+                showMessage('Mobile view enabled!', 'success');
+            } else {
+                document.body.classList.remove('mobile-view');
+                showMessage('Mobile view disabled!', 'success');
+            }
+        }
+
+        // Set today's date as default
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('formDate').value = today;
+
+            // Add focus listeners for mobile zoom (always active)
+            document.addEventListener('focus', function(event) {
+                const target = event.target;
+                const isInput = target.matches('input[type="text"], textarea');
+
+                if (isInput && document.body.classList.contains('mobile-view')) {
+                    handleInputFocus(event);
+                }
+            }, true);
+        });
+
+        // Auto-resize for textareas
+        function autoResizeTextarea(el) {
+            el.style.height = 'auto';
+            el.style.height = el.scrollHeight + 'px';
+        }
+
+        // Attach auto-resize after DOM ready
+        document.addEventListener('DOMContentLoaded', function() {
+            const textareas = document.querySelectorAll('textarea');
+            textareas.forEach(textarea => {
+                textarea.addEventListener('input', function() {
+                    autoResizeTextarea(this);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
