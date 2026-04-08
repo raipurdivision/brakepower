@@ -4,6 +4,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,7 +28,7 @@
         }
 
         .container {
-            max-width: 1160px;
+            max-width: 1130px;
             margin: 0 auto;
             background: rgb(138, 201, 241);
             border-radius: 15px;
@@ -296,11 +297,11 @@
 
         .form-container {
             padding: 30px;
-            background: #c3d0d1;
+            background: #e4e7e7;
         }
 
         .info-section {
-            background: rgb(255, 255, 255);
+            background: rgb(212, 220, 218);
             padding: 20px;
             margin-bottom: 20px;
             border-radius: 8px;
@@ -1081,7 +1082,7 @@
                                 <option value="JAISHANKAR SHARMA/CLI/BIA">JAISHANKAR SHARMA/CLI/BIA</option>
                                 <option value="JITENDRA KUMAR MISHRA/CLI/BYT">JITENDRA KUMAR MISHRA/CLI/BYT</option>
                                 <option value="K P LAHARE/CLI/R">K P LAHRE/CLI/BIA</option>
-                                <option value="K P HIRWANI/CLI/BYT">K P HIRWANI/CLI/R</option>
+                                <option value="K P HIRWANI/CLI/BYT">K P HIRWANI/CLI/BYT</option>
                                 <option value="K. K. SAHU/CLI/BIA">K. K. SAHU/CLI/BIA</option>
                                 <option value="KHUSAL SINGH/CLI/DRZ">KHUSAL SINGH/CLI/DRZ</option>
                                 <option value="MAHESHWAR/CLI/BIA">MAHESHWAR/CLI/BIA</option>
@@ -1203,12 +1204,12 @@
                 doc.setFont(undefined, 'bold');
                 doc.text(title.toUpperCase(), marginL + 3, yStart + 4.5);
                 // Blue border around section body
-                doc.setDrawColor(30, 90, 160);
-                doc.setLineWidth(0.4);
+                doc.setDrawColor(30, 90, 80);
+                doc.setLineWidth(0.6);
                 doc.rect(marginL, yStart + 6, marginR - marginL, sectionHeight, 'S');
                 // Reset colours
                 doc.setTextColor(0, 0, 0);
-                doc.setFontSize(9);
+                doc.setFontSize(09);
                 doc.setFont(undefined, 'normal');
             }
 
@@ -1254,23 +1255,23 @@
             // ═══════════════════════════════════════════════════════════════
             // Navy header block (same colour as HTML: #1a237e → #283593)
             doc.setFillColor(26, 35, 126);
-            doc.rect(0, 0, pageWidth, 30, 'F');
+            doc.rect(0, 0, pageWidth, 28, 'F');
             // Yellow bottom border (same as HTML: #FFD700)
             doc.setDrawColor(255, 215, 0);
             doc.setLineWidth(1.5);
-            doc.line(0, 30, pageWidth, 30);
+            doc.line(0, 28, pageWidth, 28);
             // White title "BRAKE POWER"
-            doc.setFontSize(16);
+            doc.setFontSize(22);
             doc.setFont(undefined, 'bold');
             doc.setTextColor(255, 255, 255);
-            doc.text('BRAKE POWER', pageWidth / 2, 11, { align: 'center' });
+            doc.text('BRAKE POWER', pageWidth / 2, 08, { align: 'center' });
             // Yellow subtitle "CHECK OF GOODS TRAIN" (#FFD700)
-            doc.setFontSize(9);
+            doc.setFontSize(14);
             doc.setFont(undefined, 'bold');
             doc.setTextColor(255, 215, 0);
             doc.text('CHECK OF GOODS TRAIN', pageWidth / 2, 19, { align: 'center' });
             // White sub-heading "RAIPUR DIVISION"
-            doc.setFontSize(8);
+            doc.setFontSize(12);
             doc.setFont(undefined, 'normal');
             doc.setTextColor(255, 255, 255);
             doc.text('RAIPUR DIVISION', pageWidth / 2, 26, { align: 'center' });
@@ -1327,10 +1328,10 @@
             // ═══════════════════════════════════════════════════════════════
             const s1H = lineH * 2 + 4;
             drawSection('Basic Information', y, s1H);
-            y += 9;
+            y += 11;
             row2(doc, 'Date :', formDate, 'Place :', place, y, lx, rx);  y += lineH;
             row2(doc, 'Time :', time,     'Line No :', lineNo,  y, lx, rx); y += lineH;
-            y += 2;
+            y += 3;
 
             // ═══════════════════════════════════════════════════════════════
             // SECTION 2 — Train Particulars
@@ -1338,13 +1339,13 @@
             y = checkPage(y, 60);
             const s2H = lineH * 5 + 4;
             drawSection('Train Particulars', y, s2H);
-            y += 9;
+            y += 11;
             row2(doc, 'Train No :', trainNo, 'Loco No :', locoNo, y, lx, rx); y += lineH;
             row2(doc, 'Load :', load, 'Home Shed :', homeShed, y, lx, rx); y += lineH;
             row2(doc, 'Schedule Insp. :', scheduleInspection, 'BPC No :', bpcNo, y, lx, rx); y += lineH;
             row2(doc, 'Issue Date :', issueDate, 'Issue Station :', issueStation, y, lx, rx); y += lineH;
             row2(doc, 'Brake Power % :', brakePowerPercent, 'Rake :', rake, y, lx, rx); y += lineH;
-            y += 2;
+            y += 3;
 
             // ═══════════════════════════════════════════════════════════════
             // SECTION 3 — Crew Particulars
@@ -1352,11 +1353,11 @@
             y = checkPage(y, 40);
             const s3H = lineH * (crewOther ? 3 : 2) + 6;
             drawSection('Crew Particulars', y, s3H);
-            y += 9;
+            y += 11;
             row2(doc, 'LP Name :', lpName, 'ALP Name :', alpName, y, lx, rx); y += lineH;
             row2(doc, 'TM :', tmName, crewOther ? 'Other :' : null, crewOther, y, lx, rx); y += lineH;
             if (crewOther) y += lineH;
-            y += 2;
+            y += 4;
 
             // ═══════════════════════════════════════════════════════════════
             // SECTION 4 — Engine & Rake Details
@@ -1364,7 +1365,7 @@
             y = checkPage(y, 65);
             const s4H = lineH * 8 + 6;
             drawSection('Engine & Rake Details', y, s4H);
-            y += 9;
+            y += 11;
 
             // Rake Integrity — full width
             doc.setFont(undefined, 'bold');
@@ -1408,7 +1409,7 @@
             doc.setTextColor(0, 0, 0);
             doc.text(bpCalc, lx + 45, y);
             y += lineH;
-            y += 2;
+            y += 6;
 
             // ═══════════════════════════════════════════════════════════════
             // SECTION 5 — Safety Checklist
@@ -1417,7 +1418,7 @@
             const abnLines = abnormalities ? doc.splitTextToSize(abnormalities, 130).length : 0;
             const s5H = lineH * 5 + (abnLines ? lineH * (abnLines + 1) : lineH) + 10;
             drawSection('Safety Checklist', y, s5H);
-            y += 9;
+            y += 14;
 
             const checklist = [
                 ['1.', 'Loose fitting / hanging parts which may endanger safe running of train', looseFitting],
