@@ -8,6 +8,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -907,7 +908,7 @@
                 </div>
                 <div class="info-fields">
                     <div class="info-field">
-                        <label for="eot">EOT:</label>
+                        <label for="eot">EOT/PRESSURE READY:</label>
                         <input type="text" id="eot" placeholder="END OF TRAIN">
                     </div>
                     <div class="info-field">
@@ -949,8 +950,8 @@
                         gap: 7px;
                         padding: 10px 14px;
                         margin-bottom: 8px;
-                        background: #f0f8ff;
-                        border-left: 4px solid #4a90e2;
+                        background: #f7f7f7;
+                        border-left: 4px solid #cccccc;
                         border-radius: 6px;
                         flex-wrap: wrap;
                     }
@@ -1033,7 +1034,7 @@
                 </div>
 
                 <!--  -->
-                <div style="padding:10px 14px;background:#fff8e1;border-left:4px solid #f39c12;border-radius:6px;margin-bottom:8px;">
+                <div style="padding:10px 14px;background:#f7f7f7;border-left:4px solid #cccccc;border-radius:6px;margin-bottom:8px;">
                     <label for="abnormalities" style="font-weight:bold;font-size:12.5px;color:#2c3e50;display:block;margin-bottom:6px;">
                          Any other abnormalities noticed and action taken:
                     </label>
@@ -1044,7 +1045,7 @@
 
 
             <div class="remarks-section">
-                <label for="otherRemarks">Other Remarks if any:</label>
+                <label for="otherRemarks">Other Details or Remarks if any:</label>
                 <textarea id="otherRemarks" rows="1" style="min-height:32px;overflow:hidden;resize:none;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"></textarea>
             </div>
 
@@ -1055,7 +1056,7 @@
                 <div class="info-field" style="background:#fff;border:2px solid #b3d9ff;border-radius:8px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);">
                     <h3 style="text-align:center;color:#1a237e;background:linear-gradient(135deg,#e8f0fe,#c5cbe3);padding:6px;border-radius:5px;margin-bottom:12px;font-size:0.95em;">CLI – 2</h3>
                     <label for="cliName" style="display:block;font-weight:bold;font-size:12px;color:#2c3e50;margin-bottom:4px;">CLI – 2 Name and HQ:</label>
-                    <select id="cliName" style="text-align:center;text-align-last:center;margin-bottom:10px;">
+                    <select id="cliName" style="text-align:center;text-align-last:center;margin-bottom:10px;" onchange="toggleOtherInput('cliName','cliNameOther')">
                         <option value="">Select CLI Name and HQ</option>
                         <option value="A K REDDY/CLI/BIA">A K REDDY/CLI/BIA</option>
                       <option value="A.R.TARAM/CLI/BIA">A.R. TARAM/CLI/BIA</option>
@@ -1130,6 +1131,9 @@
                                 <option value="OTHERS">OTHERS</option>
                         <option value="OTHERS">OTHERS</option>
                     </select>
+                    <div id="cliNameOther" style="display:none;margin-bottom:10px;">
+                        <input type="text" id="cliNameOtherText" placeholder="ENTER CLI NAME MANUALLY" style="width:100%;text-align:center;font-weight:bold;" oninput="syncOtherText('cliNameOtherText','cliName')">
+                    </div>
                     <!-- CLI-1 Signature Upload -->
                     <div style="margin-top:10px;text-align:center;">
                         <label style="display:block;font-weight:bold;font-size:12px;color:#2c3e50;margin-bottom:4px;">Upload Signature:</label>
@@ -1144,7 +1148,7 @@
                 <div class="info-field" style="background:#fff;border:2px solid #b3d9ff;border-radius:8px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);">
                     <h3 style="text-align:center;color:#1a237e;background:linear-gradient(135deg,#e8f0fe,#c5cbe3);padding:6px;border-radius:5px;margin-bottom:12px;font-size:0.95em;">CLI – 1 (Primary)</h3>
                     <label for="cliName2" style="display:block;font-weight:bold;font-size:12px;color:#2c3e50;margin-bottom:4px;">CLI – 1 Name and HQ:</label>
-                    <select id="cliName2" style="text-align:center;text-align-last:center;margin-bottom:10px;">
+                    <select id="cliName2" style="text-align:center;text-align-last:center;margin-bottom:10px;" onchange="toggleOtherInput('cliName2','cliName2Other')">
                         <option value="">-- Select CLI-2 (Optional) --</option>
                         <option value="A K REDDY/CLI/BIA">A K REDDY/CLI/BIA</option>
                         <option value="A.R.TARAM/CLI/BIA">A.R. TARAM/CLI/BIA</option>
@@ -1215,6 +1219,9 @@
                         <option value="YOGESH KUMAR MIHAULIA/CLI/BIA">YOGESH KUMAR MIHAULIA/CLI/BIA</option>
                         <option value="OTHERS">OTHERS</option>
                     </select>
+                    <div id="cliName2Other" style="display:none;margin-bottom:10px;">
+                        <input type="text" id="cliName2OtherText" placeholder="ENTER CLI NAME MANUALLY" style="width:100%;text-align:center;font-weight:bold;" oninput="syncOtherText('cliName2OtherText','cliName2')">
+                    </div>
                     <!-- CLI-2 Signature Upload -->
                     <div style="margin-top:10px;text-align:center;">
                         <label style="display:block;font-weight:bold;font-size:12px;color:#2c3e50;margin-bottom:4px;">Upload Signature:</label>
@@ -1272,8 +1279,8 @@
 
         function submitForm() {
             if (dataSubmitted) { showMessage('⚠️ Data already submitted!', 'error'); return; }
-            const cli1 = document.getElementById('cliName').value;
-            const cli2 = document.getElementById('cliName2').value;
+            const cli1 = getCliValue('cliName', 'cliNameOtherText');
+            const cli2 = getCliValue('cliName2', 'cliName2OtherText');
 
             if (!document.getElementById('formDate').value) {
                 showMessage('❌ Please select a Date before submitting!', 'error'); return;
@@ -1463,8 +1470,8 @@
             const abnormalities  = document.getElementById('abnormalities').value || '';
             const observation    = '';
             const otherRemarks   = document.getElementById('otherRemarks').value || '';
-            const cliName        = document.getElementById('cliName').value || '';
-            const cliName2       = document.getElementById('cliName2').value || '';
+            const cliName        = getCliValue('cliName', 'cliNameOtherText') || '';
+            const cliName2       = getCliValue('cliName2', 'cliName2OtherText') || '';
             const signatureFile  = document.getElementById('signature').files[0];
             const signatureFile2 = document.getElementById('signature2').files[0];
 
@@ -1588,7 +1595,7 @@
                 doc.setTextColor(30, 30, 30);
                 doc.text(question, lx + 6, y);
                 // Answer badge
-                const ansColor = answer === 'YES' ? [30,90,160] : answer === 'NO' ? [192,57,43] : [120,120,120];
+                const ansColor = [100, 100, 100];
                 doc.setFillColor(...ansColor);
                 const ansText = answer || '---';
                 const ansW = 12;
@@ -1736,7 +1743,7 @@
                 bpContinuity: document.getElementById('bpContinuity').value || '',
                 abnormalities: document.getElementById('abnormalities').value || '',
                 otherRemarks: document.getElementById('otherRemarks').value || '',
-                cliName: document.getElementById('cliName').value || ''
+                cliName: getCliValue('cliName', 'cliNameOtherText') || ''
             };
 
             // Convert to JSON and download
@@ -1800,6 +1807,19 @@
                     });
                     document.getElementById('otherRemarks').value = draftData.otherRemarks || '';
                     document.getElementById('cliName').value = draftData.cliName || '';
+                    // If the saved CLI name doesn't match any option, show OTHERS text box
+                    (function() {
+                        var sel = document.getElementById('cliName');
+                        var savedVal = draftData.cliName || '';
+                        var matched = Array.from(sel.options).some(o => o.value === savedVal);
+                        if (!matched && savedVal) {
+                            sel.value = 'OTHERS';
+                            document.getElementById('cliNameOther').style.display = 'block';
+                            document.getElementById('cliNameOtherText').value = savedVal;
+                        } else {
+                            document.getElementById('cliNameOther').style.display = sel.value === 'OTHERS' ? 'block' : 'none';
+                        }
+                    })();
 
                     autoResizeTextarea(document.getElementById('crewParticulars'));
                     autoResizeTextarea(document.getElementById('observation'));
@@ -2069,6 +2089,35 @@
                 });
             });
         });
+
+        // ── OTHERS input toggle for CLI Name dropdowns ──────────────────────
+        function toggleOtherInput(selectId, divId) {
+            var sel = document.getElementById(selectId);
+            var div = document.getElementById(divId);
+            if (sel.value === 'OTHERS') {
+                div.style.display = 'block';
+                div.querySelector('input').value = '';
+            } else {
+                div.style.display = 'none';
+            }
+        }
+
+        function syncOtherText(inputId, selectId) {
+            // Keep the manually typed value accessible via the select element's dataset
+            var input = document.getElementById(inputId);
+            var sel = document.getElementById(selectId);
+            sel.dataset.otherValue = input.value.toUpperCase();
+            input.value = input.value.toUpperCase();
+        }
+
+        // Override cliName/cliName2 value getter helpers used in submit & PDF
+        function getCliValue(selectId, otherInputId) {
+            var sel = document.getElementById(selectId);
+            if (sel.value === 'OTHERS') {
+                return document.getElementById(otherInputId).value || 'OTHERS';
+            }
+            return sel.value;
+        }
 
         // Draw IR logo on canvas with circular clip (transparent bg)
         document.addEventListener("DOMContentLoaded", function() {
