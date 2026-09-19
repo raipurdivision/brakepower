@@ -766,9 +766,110 @@
             border-color: #ff6666; color: #fff;
             transform: scale(1.05);
         }
+
+        /* ── Submit button disabled state ── */
+        .submit-btn:disabled {
+            opacity: 0.55;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            pointer-events: none;
+        }
+
+        /* ── Submit button turns into "Make Correction" after saving ── */
+        .submit-btn.correction-mode {
+            background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+            color: white;
+        }
+        .submit-btn.correction-mode:hover {
+            background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
+        }
+
+        /* ── Saving overlay (green spinner) ── */
+        .saving-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(20, 30, 60, 0.6);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+        }
+        .saving-overlay.active { display: flex; }
+        .saving-box {
+            background: #ffffff;
+            border-radius: 22px;
+            padding: 34px 40px 30px;
+            text-align: center;
+            max-width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+        }
+        .saving-spinner-wrap {
+            position: relative;
+            width: 84px;
+            height: 84px;
+            margin: 0 auto 22px;
+        }
+        .saving-spinner {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            border: 8px solid #d9f2e0;
+            border-top-color: #1e9e4a;
+            border-radius: 50%;
+            animation: savingSpin 0.9s linear infinite;
+        }
+        @keyframes savingSpin { to { transform: rotate(360deg); } }
+        .saving-hand {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            margin: -20px 0 0 -20px;
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            font-size: 32px;
+            text-align: center;
+            transform-origin: 50% 90%;
+            animation: handWave 1.2s ease-in-out infinite;
+        }
+        @keyframes handWave {
+            0%, 100% { transform: rotate(-18deg); }
+            50%      { transform: rotate(18deg); }
+        }
+        .saving-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1e9e4a;
+            letter-spacing: 0.3px;
+            text-transform: uppercase;
+        }
+        .saving-sub {
+            margin-top: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            color: #2e7d4f;
+        }
     </style>
 </head>
 <body>
+    <!-- Saving overlay (shown while data is being saved) -->
+    <div class="saving-overlay" id="savingOverlay">
+        <div class="saving-box">
+            <div class="saving-spinner-wrap">
+                <div class="saving-spinner"></div>
+                <div class="saving-hand">✋</div>
+            </div>
+            <div class="saving-title" id="savingTitle">⏳ Please wait — data saving...</div>
+            <div class="saving-sub">Do not close or refresh this page</div>
+        </div>
+    </div>
     <!-- Zoom Overlay for Mobile View -->
     <div class="zoom-overlay" id="zoomOverlay">
         <div class="zoom-input-container">
@@ -1334,9 +1435,9 @@
             <div id="message" class="message"></div>
 
             <div class="button-group">
-                <button class="save-draft-btn" onclick="saveDraft()">Save Draft</button>
+                <button class="save-draft-btn" onclick="saveDraftFile()">Save Draft</button>
                 <button class="upload-draft-btn" onclick="document.getElementById('draftFileInput').click()">Upload Draft</button>
-                <button class="submit-btn" onclick="submitForm()">Submit</button>
+                <button class="submit-btn" id="submitBtn" onclick="submitForm()">Submit</button>
                 <button class="pdf-btn" onclick="generatePDF()">Generate PDF</button>
             </div>
 
@@ -1361,6 +1462,34 @@
 
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7WDM2HP5ukVhVtQCS2fwdJ2BvKnv9xszb8gMMK273j90Njwb5_nmtfgikZSdGYReciw/exec";
         let dataSubmitted = false;
+        let isSubmitting = false;
+        let bpRecordId = '';          // unique ID of this form's row in Google Sheet
+        let lastSavedSnapshot = null; // EXACT data already saved in Google Sheet (used to send only NEW data)
+
+        // ── Saving overlay + submit button lock ───────────────────────────
+        function setSavingState(on, isCorrection) {
+            const ov  = document.getElementById('savingOverlay');
+            const btn = document.getElementById('submitBtn');
+            const ttl = document.getElementById('savingTitle');
+            if (ttl) ttl.textContent = isCorrection
+                ? '⏳ Please wait — updating data...'
+                : '⏳ Please wait — data saving...';
+            if (ov)  ov.classList.toggle('active', on);
+            if (btn) btn.disabled = on;
+        }
+
+        // After first save the Submit button becomes "Make Correction"
+        function updateSubmitButton() {
+            const btn = document.getElementById('submitBtn');
+            if (!btn) return;
+            if (dataSubmitted) {
+                btn.textContent = '✏️ Make Correction';
+                btn.classList.add('correction-mode');
+            } else {
+                btn.textContent = 'Submit';
+                btn.classList.remove('correction-mode');
+            }
+        }
 
         // ── Message banner (errors stay 5s, success 3s) ───────────────────
         function showMessage(text, type) {
@@ -1372,33 +1501,68 @@
             el._t = setTimeout(() => { el.style.display = 'none'; }, type === 'error' ? 5000 : 3000);
         }
 
-        function submitForm() {
-            if (dataSubmitted) { showMessage('⚠️ Data already submitted!', 'error'); return; }
-            const cli1 = getCliValue('cliName', 'cliNameOtherText');
-            const cli2 = getCliValue('cliName2', 'cliName2OtherText');
+        // Fields that go to the Google Sheet
+        function getSheetFields() {
+            return {
+                date:         document.getElementById('formDate').value,
+                time:         document.getElementById('time').value,
+                place:        document.getElementById('place').value,
+                trainNo:      document.getElementById('trainNo').value,
+                locoNo:       document.getElementById('locoNo').value,
+                lpName:       document.getElementById('lpName').value,
+                alpName:      document.getElementById('alpName').value,
+                otherRemarks: document.getElementById('otherRemarks').value,
+                cliName1:     getCliValue('cliName', 'cliNameOtherText'),
+                cliName2:     getCliValue('cliName2', 'cliName2OtherText')
+            };
+        }
 
-            if (!document.getElementById('formDate').value) {
+        // Make sure Submit button is usable (used after Upload Draft)
+        function enableSubmitButton() {
+            isSubmitting = false;
+            const ov  = document.getElementById('savingOverlay');
+            const btn = document.getElementById('submitBtn');
+            if (ov)  ov.classList.remove('active');
+            if (btn) btn.disabled = false;
+            updateSubmitButton();
+        }
+
+        function submitForm() {
+            if (isSubmitting) return;
+            const fields = getSheetFields();
+
+            if (!fields.date) {
                 showMessage('❌ Please select a Date before submitting!', 'error'); return;
             }
-            if (!cli1 && !cli2) {
+            if (!fields.cliName1 && !fields.cliName2) {
                 showMessage('❌ Please select at least one CLI Name!', 'error'); return;
             }
 
-            const payload = {
-                sheet:            'Brake Power',
-                date:             document.getElementById('formDate').value,
-                time:             document.getElementById('time').value,
-                place:            document.getElementById('place').value,
-                trainNo:          document.getElementById('trainNo').value,
-                locoNo:           document.getElementById('locoNo').value,
-                lpName:           document.getElementById('lpName').value,
-                alpName:          document.getElementById('alpName').value,
-                otherRemarks:     document.getElementById('otherRemarks').value,
-                cliName1:         cli1,
-                cliName2:         cli2
-            };
+            // true → this record is already in the sheet: update that same row, never add a new one
+            const isCorrection = dataSubmitted && !!bpRecordId;
 
-            showMessage('⏳ Submitting to Google Sheets...', 'success');
+            // Find ONLY the newly entered / changed data compared with what is already saved
+            let changed = Object.keys(fields);
+            if (isCorrection && lastSavedSnapshot) {
+                changed = Object.keys(fields).filter(k => (fields[k] || '') !== (lastSavedSnapshot[k] || ''));
+                if (!changed.length) {
+                    showMessage('ℹ️ No new data entered — all data is already saved. Nothing sent again.', 'success');
+                    return;
+                }
+            }
+
+            // Same recordId is re-sent on every correction so Apps Script updates that row
+            if (!bpRecordId) bpRecordId = 'BP-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+
+            const payload = Object.assign({ sheet: 'Brake Power' }, fields, {
+                recordId:      bpRecordId,
+                mode:          isCorrection ? 'update' : 'insert',
+                changedFields: changed.join(',')
+            });
+
+            isSubmitting = true;
+            setSavingState(true, isCorrection);
+            showMessage(isCorrection ? '⏳ Updating Google Sheets...' : '⏳ Submitting to Google Sheets...', 'success');
 
             // Build URL-encoded form body (required for no-cors cross-origin POST to Apps Script)
             const formBody = Object.entries(payload)
@@ -1413,9 +1577,20 @@
             })
             .then(() => {
                 dataSubmitted = true;
-                showMessage('✅ Data submitted to Google Sheets (Brake Power sheet) successfully!', 'success');
+                lastSavedSnapshot = Object.assign({}, fields);   // remember what is now saved
+                isSubmitting = false;
+                setSavingState(false, isCorrection);
+                updateSubmitButton();
+                _asSaveLocal();                                   // keep "already saved" state in draft
+                showMessage(isCorrection
+                    ? '✅ Correction saved — only new changes updated in Google Sheets!'
+                    : '✅ Data submitted to Google Sheets (Brake Power sheet) successfully!', 'success');
             })
-            .catch(() => showMessage('❌ Error submitting. Check network and try again.', 'error'));
+            .catch(() => {
+                isSubmitting = false;
+                setSavingState(false, isCorrection);
+                showMessage('❌ Error submitting. Check network and try again.', 'error');
+            });
         }
 
         function generatePDF() {
@@ -1801,48 +1976,11 @@
 
         // showMessage defined at top of script
 
-        function saveDraft() {
-            const draftData = {
-                date: document.getElementById('formDate').value || '',
-                place: document.getElementById('place').value || '',
-                time: document.getElementById('time').value || '',
-                lineNo: document.getElementById('lineNo').value || '',
-                trainNo: document.getElementById('trainNo').value || '',
-                locoNo: document.getElementById('locoNo').value || '',
-                load: document.getElementById('load').value || '',
-                homeShed: document.getElementById('homeShed').value || '',
-                scheduleInspection: document.getElementById('scheduleInspection').value || '',
-                bpcNo: document.getElementById('bpcNo').value || '',
-                issueDate: document.getElementById('issueDate').value || '',
-                issueStation: document.getElementById('issueStation').value || '',
-                brakePowerPercent: document.getElementById('brakePowerPercent').value || '',
-                rake: document.getElementById('rake').value || '',
-                lpName: document.getElementById('lpName').value || '',
-                alpName: document.getElementById('alpName').value || '',
-                tmName: document.getElementById('tmName').value || '',
-                crewParticulars: document.getElementById('crewParticulars').value || '',
-                rakeIntegrity: document.getElementById('rakeIntegrity').value || '',
-                bpInEngine: document.getElementById('bpInEngine').value || '',
-                bpInBV: document.getElementById('bpInBV').value || '',
-                fpInEngine: document.getElementById('fpInEngine').value || '',
-                fpInBV: document.getElementById('fpInBV').value || '',
-                eot: document.getElementById('eot').value || '',
-                arrival: document.getElementById('arrival').value || '',
-                totalCylinders: document.getElementById('totalCylinders').value || '',
-                operativeCylinders: document.getElementById('operativeCylinders').value || '',
-                brakePowerCalc: document.getElementById('brakePowerCalc').value || '',
-                looseFitting: document.getElementById('looseFitting').value || '',
-                doorsClosed: document.getElementById('doorsClosed').value || '',
-                emptyLoadDevice: document.getElementById('emptyLoadDevice').value || '',
-                handBrake: document.getElementById('handBrake').value || '',
-                bpContinuity: document.getElementById('bpContinuity').value || '',
-                abnormalities: document.getElementById('abnormalities').value || '',
-                otherRemarks: document.getElementById('otherRemarks').value || '',
-                cliName: getCliValue('cliName', 'cliNameOtherText') || ''
-            };
-
-            // Convert to JSON and download
-            const jsonString = JSON.stringify(draftData, null, 2);
+        // Save Draft button: saves in browser AND downloads a draft file
+        // (file also remembers what is already saved in Google Sheets)
+        function saveDraftFile() {
+            _asSaveLocal();
+            const jsonString = JSON.stringify(_asCollect(), null, 2);
             const blob = new Blob([jsonString], { type: 'application/json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -1853,7 +1991,6 @@
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-
             showMessage('Draft saved successfully!', 'success');
         }
 
@@ -1866,61 +2003,15 @@
                 try {
                     const draftData = JSON.parse(e.target.result);
 
-                    // Restore data
-                    document.getElementById('formDate').value = draftData.date || '';
-                    document.getElementById('place').value = draftData.place || '';
-                    document.getElementById('time').value = draftData.time || '';
-                    document.getElementById('lineNo').value = draftData.lineNo || '';
-                    document.getElementById('trainNo').value = draftData.trainNo || '';
-                    document.getElementById('locoNo').value = draftData.locoNo || '';
-                    document.getElementById('load').value = draftData.load || '';
-                    document.getElementById('homeShed').value = draftData.homeShed || '';
-                    document.getElementById('scheduleInspection').value = draftData.scheduleInspection || '';
-                    document.getElementById('bpcNo').value = draftData.bpcNo || '';
-                    document.getElementById('issueDate').value = draftData.issueDate || '';
-                    document.getElementById('issueStation').value = draftData.issueStation || '';
-                    document.getElementById('brakePowerPercent').value = draftData.brakePowerPercent || '';
-                    document.getElementById('rake').value = draftData.rake || '';
-                    document.getElementById('lpName').value = draftData.lpName || '';
-                    document.getElementById('alpName').value = draftData.alpName || '';
-                    document.getElementById('tmName').value = draftData.tmName || '';
-                    document.getElementById('crewParticulars').value = draftData.crewParticulars || '';
-                    document.getElementById('rakeIntegrity').value = draftData.rakeIntegrity || '';
-                    document.getElementById('bpInEngine').value = draftData.bpInEngine || '';
-                    document.getElementById('bpInBV').value = draftData.bpInBV || '';
-                    document.getElementById('fpInEngine').value = draftData.fpInEngine || '';
-                    document.getElementById('fpInBV').value = draftData.fpInBV || '';
-                    document.getElementById('eot').value = draftData.eot || '';
-                    document.getElementById('arrival').value = draftData.arrival || '';
-                    document.getElementById('totalCylinders').value = draftData.totalCylinders || '';
-                    document.getElementById('operativeCylinders').value = draftData.operativeCylinders || '';
-                    document.getElementById('brakePowerCalc').value = draftData.brakePowerCalc || '';
-                    document.getElementById('abnormalities').value = draftData.abnormalities || '';
-                    ['looseFitting','doorsClosed','emptyLoadDevice','handBrake','bpContinuity'].forEach(id => {
-                        const el = document.getElementById(id);
-                        if (el && draftData[id]) el.value = draftData[id];
-                    });
-                    document.getElementById('otherRemarks').value = draftData.otherRemarks || '';
-                    document.getElementById('cliName').value = draftData.cliName || '';
-                    // If the saved CLI name doesn't match any option, show OTHERS text box
-                    (function() {
-                        var sel = document.getElementById('cliName');
-                        var savedVal = draftData.cliName || '';
-                        var matched = Array.from(sel.options).some(o => o.value === savedVal);
-                        if (!matched && savedVal) {
-                            sel.value = 'OTHERS';
-                            document.getElementById('cliNameOther').style.display = 'block';
-                            document.getElementById('cliNameOtherText').value = savedVal;
-                        } else {
-                            document.getElementById('cliNameOther').style.display = sel.value === 'OTHERS' ? 'block' : 'none';
-                        }
-                    })();
+                    resetFormFields();          // start clean so nothing old is left behind
+                    _asApply(draftData);        // fill form from draft (old + new draft formats)
+                    _asApplyState(draftData);   // restore "already saved" state
+                    _asSaveLocal();
+                    enableSubmitButton();       // SUBMIT BUTTON ENABLED after draft upload
 
-                    autoResizeTextarea(document.getElementById('crewParticulars'));
-                    autoResizeTextarea(document.getElementById('observation'));
-                    autoResizeTextarea(document.getElementById('otherRemarks'));
-
-                    showMessage('Draft uploaded successfully!', 'success');
+                    showMessage(dataSubmitted
+                        ? 'Draft uploaded — earlier saved data will NOT be saved again. Submit sends only new data.'
+                        : 'Draft uploaded successfully! Submit is enabled.', 'success');
                 } catch (error) {
                     showMessage('Error loading draft file. Please check the file format.', 'error');
                     console.error('Draft upload error:', error);
@@ -2260,8 +2351,8 @@
         const AUTOSAVE_FIELDS = [
             "formDate","lineNo","locoNo","trainNo","rake","load","homeShed",
             "tmName","place","time","arrival","issueStation","issueDate","bpcNo",
-            "lpName","alpName","crewParticulars",
-            "cliName","cliName2",
+            "lpName","alpName","crewParticulars","otherRemarks",
+            "cliName","cliNameOtherText","cliName2","cliName2OtherText",
             "totalCylinders","operativeCylinders","brakePowerPercent","brakePowerCalc",
             "bpInEngine","bpInBV","fpInEngine","fpInBV","bpContinuity",
             "handBrake","looseFitting","doorsClosed","rakeIntegrity","eot",
@@ -2273,26 +2364,80 @@
             const d = {};
             AUTOSAVE_FIELDS.forEach(id => {
                 const el = document.getElementById(id);
-                if (!el) return;
+                if (!el || el.type === "file") return;
                 d[id] = el.value;
             });
             d["__savedAt"] = new Date().toLocaleString();
+            // what is already saved in Google Sheets (so it is never saved twice)
+            d["__dataSubmitted"]     = dataSubmitted;
+            d["__bpRecordId"]        = bpRecordId;
+            d["__lastSavedSnapshot"] = lastSavedSnapshot;
             return d;
         }
 
+        // Fill form from a draft. Understands both new drafts and older draft files.
         function _asApply(d) {
+            const legacy = { formDate: "date" };   // older draft files used "date"
             AUTOSAVE_FIELDS.forEach(id => {
                 const el = document.getElementById(id);
-                if (!el || d[id] === undefined) return;
-                el.value = d[id];
+                if (!el || el.type === "file") return;
+                let v = d[id];
+                if (v === undefined && legacy[id]) v = d[legacy[id]];
+                if (v === undefined) return;
+                el.value = v;
                 // trigger change for selects that have onchange handlers
+                if (el.tagName === "SELECT" && el.onchange) {
+                    try { el.onchange(); } catch(e) {}
+                }
+            });
+            // CLI names typed manually (older drafts stored the typed name in cliName)
+            [["cliName","cliNameOther","cliNameOtherText"],["cliName2","cliName2Other","cliName2OtherText"]].forEach(([sid, did, tid]) => {
+                const sel = document.getElementById(sid);
+                if (!sel) return;
+                const v = d[sid];
+                if (v && !Array.from(sel.options).some(o => o.value === v)) {
+                    sel.value = "OTHERS";
+                    const t = document.getElementById(tid);
+                    if (t) t.value = v;
+                }
+                const box = document.getElementById(did);
+                if (box) box.style.display = sel.value === "OTHERS" ? "block" : "none";
+            });
+            ["crewParticulars","otherRemarks","abnormalities"].forEach(id => {
+                const el = document.getElementById(id);
+                if (el && typeof autoResizeTextarea === "function") { try { autoResizeTextarea(el); } catch(e) {} }
+            });
+        }
+
+        // Restore "already saved in Google Sheets" state from a draft
+        function _asApplyState(d) {
+            if (d && d["__dataSubmitted"] && d["__bpRecordId"] && d["__lastSavedSnapshot"]) {
+                dataSubmitted     = true;
+                bpRecordId        = d["__bpRecordId"];
+                lastSavedSnapshot = d["__lastSavedSnapshot"];
+            } else {
+                dataSubmitted     = false;
+                bpRecordId        = "";
+                lastSavedSnapshot = null;
+            }
+            updateSubmitButton();
+        }
+
+        function resetFormFields() {
+            AUTOSAVE_FIELDS.forEach(id => {
+                const el = document.getElementById(id);
+                if (!el) return;
+                if (el.type === "file") { el.value = ""; return; }
+                if (el.tagName === "SELECT") el.selectedIndex = 0;
+                else el.value = "";
                 if (el.tagName === "SELECT" && el.onchange) {
                     try { el.onchange(); } catch(e) {}
                 }
             });
         }
 
-        function saveDraft() {
+        // Auto-save to browser storage (runs on every change)
+        function _asSaveLocal() {
             try {
                 localStorage.setItem(DRAFT_KEY, JSON.stringify(_asCollect()));
                 _asSetStatus("saved", "Draft saved at " + _asTime());
@@ -2308,6 +2453,7 @@
                 if (!raw) return false;
                 const d = JSON.parse(raw);
                 _asApply(d);
+                _asApplyState(d);
                 const at = d["__savedAt"] || "";
                 _asSetStatus("draft", "✔ Draft restored" + (at ? " · " + at : ""));
                 document.getElementById("clearDraftBtn").style.display = "";
@@ -2318,16 +2464,10 @@
         function clearDraft() {
             if (!confirm("🗑️ Clear saved draft?\n\nAll form data will be reset. This cannot be undone.")) return;
             localStorage.removeItem(DRAFT_KEY);
-            // Reset all fields
-            AUTOSAVE_FIELDS.forEach(id => {
-                const el = document.getElementById(id);
-                if (!el) return;
-                if (el.tagName === "SELECT") el.selectedIndex = 0;
-                else el.value = "";
-                if (el.tagName === "SELECT" && el.onchange) {
-                    try { el.onchange(); } catch(e) {}
-                }
-            });
+            resetFormFields();
+            // fresh form = new record (next Submit adds a new row)
+            dataSubmitted = false; bpRecordId = ""; lastSavedSnapshot = null;
+            enableSubmitButton();
             _asSetStatus("draft", "Draft cleared");
             document.getElementById("clearDraftBtn").style.display = "none";
         }
@@ -2335,7 +2475,7 @@
         function _asSchedule() {
             _asSetStatus("saving", "Saving...");
             clearTimeout(_asTimer);
-            _asTimer = setTimeout(saveDraft, 700);
+            _asTimer = setTimeout(_asSaveLocal, 700);
         }
 
         function _asSetStatus(state, msg) {
