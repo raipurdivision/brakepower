@@ -11,6 +11,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -29,7 +30,7 @@
         body {
             background: linear-gradient(135deg, #17258e 0%, #87ceeb 100%);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding: 20px;
+            padding: 14px;
             min-height: 100vh;
         }
 
@@ -85,7 +86,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 13px;
+            margin-top: 8px;
         }
 
         .voice-toggle-container {
@@ -128,7 +129,7 @@
 
         body.mobile-view .header-content {
             flex-direction: column;
-            gap: 10px;
+            gap: 7px;
         }
 
         body.mobile-view .form-container {
@@ -137,7 +138,7 @@
 
         body.mobile-view .info-fields {
             flex-direction: column;
-            gap: 10px;
+            gap: 7px;
         }
 
         body.mobile-view .info-field {
@@ -165,7 +166,7 @@
 
         body.mobile-view .button-group {
             flex-direction: column;
-            gap: 10px;
+            gap: 7px;
         }
 
         body.mobile-view button {
@@ -302,14 +303,14 @@
         }
 
         .form-container {
-            padding: 30px;
+            padding: 14px;
             background: #e4e7e7;
         }
 
         .info-section {
             background: rgb(176, 188, 188);
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 14px;
+            margin-bottom: 12px;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
@@ -318,15 +319,15 @@
             font-size: 1.2em;
             font-weight: bold;
             color: #2c3e50;
-            margin-bottom: 15px;
+            margin-bottom: 7px;
             text-align: center;
         }
 
         .info-fields {
             display: flex;
             justify-content: space-between;
-            gap: 20px;
-            margin-bottom: 15px;
+            gap: 12px;
+            margin-bottom: 7px;
             flex-wrap: wrap;
         }
 
@@ -341,14 +342,14 @@
         .info-field label {
             display: block;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             color: #2c3e50;
             font-size: 12px;
         }
 
         .info-field input {
             width: 100%;
-            padding: 8px;
+            padding: 6px;
             border: 2px solid #b3d9ff;
             border-radius: 5px;
             font-size: 12px;
@@ -363,8 +364,8 @@
 
         .checklist-section {
             background: white;
-            padding: 20px;
-            margin-bottom: 20px;
+            padding: 14px;
+            margin-bottom: 12px;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
@@ -373,12 +374,12 @@
             font-size: 1em;
             font-weight: bold;
             color: #2c3e50;
-            margin-bottom: 10px;
+            margin-bottom: 7px;
         }
 
         .checklist-item {
-            padding: 10px;
-            margin-bottom: 8px;
+            padding: 6px;
+            margin-bottom: 6px;
             background: #f0f8ff;
             border-left: 4px solid #4a90e2;
             border-radius: 4px;
@@ -387,7 +388,7 @@
 
         .table-wrapper {
             overflow-x: auto;
-            margin-bottom: 20px;
+            margin-bottom: 12px;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
@@ -404,7 +405,7 @@
         }
 
         th {
-            padding: 15px 10px;
+            padding: 10px 8px;
             text-align: center;
             font-weight: bold;
             font-size: 12px;
@@ -429,7 +430,7 @@
         }
 
         td {
-            padding: 10px;
+            padding: 6px;
             border: 1px solid #b3d9ff;
             text-align: center;
             font-size: 12px;
@@ -453,7 +454,7 @@
         select,
         textarea {
             width: 100%;
-            padding: 8px;
+            padding: 6px;
             border: 2px solid #b3d9ff;
             border-radius: 5px;
             font-size: 12px;
@@ -473,14 +474,14 @@
         }
 
         .remarks-section {
-            margin-top: 20px;
-            margin-bottom: 15px;
+            margin-top: 12px;
+            margin-bottom: 7px;
         }
 
         .remarks-section label {
             display: block;
             font-weight: bold;
-            margin-bottom: 5px;
+            margin-bottom: 4px;
             color: #2c3e50;
             font-size: 12px;
         }
@@ -496,78 +497,172 @@
 
         .button-group {
             display: flex;
-            gap: 15px;
+            gap: 7px;
             justify-content: center;
             flex-wrap: wrap;
-            margin-top: 20px;
+            margin-top: 12px;
         }
 
         button {
-            padding: 12px 30px;
-            font-size: 1em;
+            padding: 8px 16px;
+            font-size: 0.75em;
             font-weight: bold;
-            border: none;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.25s ease;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            letter-spacing: 0.4px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(155deg, #1c3a52 0%, #0d1f2d 100%);
+            border: 1.5px solid var(--btn-glow, #555);
+            color: #ffffff;
+            box-shadow:
+                0 3px 10px rgba(0,0,0,0.45),
+                0 0 0 1px rgba(255,255,255,0.02) inset,
+                0 0 10px -4px var(--btn-glow, transparent);
+        }
+
+        button:before {
+            content: attr(data-icon);
+            font-size: 1em;
+            filter: drop-shadow(0 0 3px var(--btn-glow, transparent));
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(155deg, #244a67 0%, #112738 100%);
+            box-shadow:
+                0 5px 14px rgba(0,0,0,0.5),
+                0 0 0 1px rgba(255,255,255,0.03) inset,
+                0 0 14px -2px var(--btn-glow, transparent);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(60%);
+            transform: none !important;
+        }
+
+        button:disabled:hover {
+            transform: none;
         }
 
         .add-row-btn {
-            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
-            color: white;
-        }
-
-        .add-row-btn:hover {
-            background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            --btn-glow: #3ddc84;
         }
 
         .submit-btn {
-            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-            color: white;
-        }
-
-        .submit-btn:hover {
-            background: linear-gradient(135deg, #2980b9 0%, #21618c 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            --btn-glow: #4aa8ff;
         }
 
         .pdf-btn {
-            background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
-            color: white;
-        }
-
-        .pdf-btn:hover {
-            background: linear-gradient(135deg, #d35400 0%, #ba4a00 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            --btn-glow: #ff9d3f;
         }
 
         .save-draft-btn {
-            background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
-            color: white;
-        }
-
-        .save-draft-btn:hover {
-            background: linear-gradient(135deg, #8e44ad 0%, #7d3c98 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+            --btn-glow: #b06bff;
         }
 
         .upload-draft-btn {
-            background: linear-gradient(135deg, #16a085 0%, #138d75 100%);
-            color: white;
+            --btn-glow: #34d1b0;
         }
 
-        .upload-draft-btn:hover {
-            background: linear-gradient(135deg, #138d75 0%, #117a65 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+        .reset-btn {
+            --btn-glow: #ff5555;
+        }
+
+        /* Saving indicator (inline, above submit button) */
+        .saving-overlay {
+            display: none;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .saving-overlay.active {
+            display: flex;
+        }
+
+        .saving-box {
+            text-align: center;
+            padding: 14px 26px;
+            border-radius: 14px;
+            background: rgba(255,255,255,0.85);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+        }
+
+        .saving-ring {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 10px;
+            border-radius: 50%;
+            background: conic-gradient(#1e9e50 0deg, #1e9e50 270deg, #d9f2e3 270deg, #d9f2e3 360deg);
+            animation: savingSpin 1.1s linear infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .saving-ring::before {
+            content: "";
+            position: absolute;
+            inset: 6px;
+            background: #ffffff;
+            border-radius: 50%;
+        }
+
+        .saving-hand {
+            position: relative;
+            font-size: 1.5em;
+            animation: savingWave 0.9s ease-in-out infinite;
+            transform-origin: 70% 70%;
+        }
+
+        @keyframes savingSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes savingWave {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-18deg); }
+            75% { transform: rotate(18deg); }
+        }
+
+        .saving-title {
+            color: #16833f;
+            font-weight: 800;
+            font-size: 1.05em;
+            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .saving-hourglass {
+            font-size: 1em;
+            animation: savingFlip 1.6s ease-in-out infinite;
+        }
+
+        @keyframes savingFlip {
+            0%, 40% { transform: rotate(0deg); }
+            50%, 90% { transform: rotate(180deg); }
+            100% { transform: rotate(180deg); }
+        }
+
+        .saving-subtitle {
+            color: #16833f;
+            font-weight: 700;
+            margin-top: 6px;
+            font-size: 0.85em;
         }
 
         #draftFileInput {
@@ -576,7 +671,7 @@
 
         .message {
             display: none;
-            margin-top: 20px;
+            margin-top: 12px;
             padding: 15px;
             border-radius: 8px;
             text-align: center;
@@ -618,7 +713,7 @@
             width: 90%;
             max-width: 500px;
             border-radius: 10px;
-            padding: 20px;
+            padding: 14px;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
         }
 
@@ -626,7 +721,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 15px;
+            margin-bottom: 7px;
         }
 
         .zoom-input-title {
@@ -673,7 +768,7 @@
 
         .zoom-done-btn {
             width: 100%;
-            margin-top: 15px;
+            margin-top: 7px;
             padding: 12px;
             background: #27ae60;
             color: white;
@@ -700,7 +795,7 @@
             .header-content {
                 flex-direction: column;
                 align-items: center;
-                gap: 10px;
+                gap: 7px;
             }
 
             .voice-toggle-container {
@@ -1093,8 +1188,8 @@
                 </div>
 
                 <!--  -->
-                <div style="padding:10px 14px;background:#f7f7f7;border-left:4px solid #cccccc;border-radius:6px;margin-bottom:8px;">
-                    <label for="abnormalities" style="font-weight:bold;font-size:12.5px;color:#2c3e50;display:block;margin-bottom:6px;">
+                <div style="padding:7px 10px;background:#f7f7f7;border-left:4px solid #cccccc;border-radius:6px;margin-bottom:5px;">
+                    <label for="abnormalities" style="font-weight:bold;font-size:12.5px;color:#2c3e50;display:block;margin-bottom:5px;">
                          Any other abnormalities noticed and action taken:
                     </label>
                     <textarea id="abnormalities" rows="2" placeholder="DESCRIBE ANY ABNORMALITIES AND ACTION TAKEN..."></textarea>
@@ -1112,10 +1207,10 @@
             <div class="info-fields" style="align-items:stretch;">
 
                 <!-- ── CLI-1 CARD ── -->
-                <div class="info-field" style="background:#fff;border:2px solid #b3d9ff;border-radius:8px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);">
-                    <h3 style="text-align:center;color:#1a237e;background:linear-gradient(135deg,#e8f0fe,#c5cbe3);padding:6px;border-radius:5px;margin-bottom:12px;font-size:0.95em;">CLI – 2</h3>
-                    <label for="cliName" style="display:block;font-weight:bold;font-size:12px;color:#2c3e50;margin-bottom:4px;">CLI – 2 Name and HQ:</label>
-                    <select id="cliName" style="text-align:center;text-align-last:center;margin-bottom:10px;" onchange="toggleOtherInput('cliName','cliNameOther')">
+                <div class="info-field" style="background:#fff;border:2px solid #b3d9ff;border-radius:8px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+                    <h3 style="text-align:center;color:#1a237e;background:linear-gradient(135deg,#e8f0fe,#c5cbe3);padding:5px;border-radius:5px;margin-bottom:8px;font-size:0.95em;">CLI – 2</h3>
+                    <label for="cliName" style="display:block;font-weight:bold;font-size:12px;color:#2c3e50;margin-bottom:3px;">CLI – 2 Name and HQ:</label>
+                    <select id="cliName" style="text-align:center;text-align-last:center;margin-bottom:7px;" onchange="toggleOtherInput('cliName','cliNameOther')">
                         <option value="">Select CLI Name and HQ</option>
                         <option value="A K REDDY/CLI/BIA">A K REDDY/CLI/BIA</option>
                       <option value="A.R.TARAM/CLI/BIA">A.R. TARAM/CLI/BIA</option>
@@ -1208,24 +1303,24 @@
                                 <option value="OTHERS">OTHERS</option>
                         <option value="OTHERS">OTHERS</option>
                     </select>
-                    <div id="cliNameOther" style="display:none;margin-bottom:10px;">
+                    <div id="cliNameOther" style="display:none;margin-bottom:7px;">
                         <input type="text" id="cliNameOtherText" placeholder="ENTER CLI NAME MANUALLY" style="width:100%;text-align:center;font-weight:bold;" oninput="syncOtherText('cliNameOtherText','cliName')">
                     </div>
                     <!-- CLI-1 Signature Upload -->
-                    <div style="margin-top:10px;text-align:center;">
-                        <label style="display:block;font-weight:bold;font-size:12px;color:#2c3e50;margin-bottom:4px;">Upload Signature:</label>
+                    <div style="margin-top:7px;text-align:center;">
+                        <label style="display:block;font-weight:bold;font-size:12px;color:#2c3e50;margin-bottom:3px;">Upload Signature:</label>
                         <input type="file" id="signature" accept="image/*" onchange="previewSig(event,'signaturePreview','signatureImg')" style="display:block;margin:0 auto;">
-                        <div id="signaturePreview" style="margin-top:8px;display:none;text-align:center;">
+                        <div id="signaturePreview" style="margin-top:6px;display:none;text-align:center;">
                             <img id="signatureImg" style="max-width:180px;max-height:80px;border:2px solid #4a90e2;border-radius:5px;">
                         </div>
                     </div>
                 </div>
 
                 <!-- ── CLI-2 CARD ── -->
-                <div class="info-field" style="background:#fff;border:2px solid #b3d9ff;border-radius:8px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,.08);">
-                    <h3 style="text-align:center;color:#1a237e;background:linear-gradient(135deg,#e8f0fe,#c5cbe3);padding:6px;border-radius:5px;margin-bottom:12px;font-size:0.95em;">CLI – 1 (Primary)</h3>
-                    <label for="cliName2" style="display:block;font-weight:bold;font-size:12px;color:#2c3e50;margin-bottom:4px;">CLI – 1 Name and HQ:</label>
-                    <select id="cliName2" style="text-align:center;text-align-last:center;margin-bottom:10px;" onchange="toggleOtherInput('cliName2','cliName2Other')">
+                <div class="info-field" style="background:#fff;border:2px solid #b3d9ff;border-radius:8px;padding:10px;box-shadow:0 2px 8px rgba(0,0,0,.08);">
+                    <h3 style="text-align:center;color:#1a237e;background:linear-gradient(135deg,#e8f0fe,#c5cbe3);padding:5px;border-radius:5px;margin-bottom:8px;font-size:0.95em;">CLI – 1 (Primary)</h3>
+                    <label for="cliName2" style="display:block;font-weight:bold;font-size:12px;color:#2c3e50;margin-bottom:3px;">CLI – 1 Name and HQ:</label>
+                    <select id="cliName2" style="text-align:center;text-align-last:center;margin-bottom:7px;" onchange="toggleOtherInput('cliName2','cliName2Other')">
                         <option value="">-- Select CLI-2 (Optional) --</option>
                         <option value="A K REDDY/CLI/BIA">A K REDDY/CLI/BIA</option>
                         <option value="A.R.TARAM/CLI/BIA">A.R. TARAM/CLI/BIA</option>
@@ -1314,14 +1409,14 @@
                         <option value="VIJAY RAM/CLI/BYT">VIJAY RAM/CLI/BYT</option>
                         <option value="OTHERS">OTHERS</option>
                     </select>
-                    <div id="cliName2Other" style="display:none;margin-bottom:10px;">
+                    <div id="cliName2Other" style="display:none;margin-bottom:7px;">
                         <input type="text" id="cliName2OtherText" placeholder="ENTER CLI NAME MANUALLY" style="width:100%;text-align:center;font-weight:bold;" oninput="syncOtherText('cliName2OtherText','cliName2')">
                     </div>
                     <!-- CLI-2 Signature Upload -->
-                    <div style="margin-top:10px;text-align:center;">
-                        <label style="display:block;font-weight:bold;font-size:12px;color:#2c3e50;margin-bottom:4px;">Upload Signature:</label>
+                    <div style="margin-top:7px;text-align:center;">
+                        <label style="display:block;font-weight:bold;font-size:12px;color:#2c3e50;margin-bottom:3px;">Upload Signature:</label>
                         <input type="file" id="signature2" accept="image/*" onchange="previewSig(event,'signaturePreview2','signatureImg2')" style="display:block;margin:0 auto;">
-                        <div id="signaturePreview2" style="margin-top:8px;display:none;text-align:center;">
+                        <div id="signaturePreview2" style="margin-top:6px;display:none;text-align:center;">
                             <img id="signatureImg2" style="max-width:180px;max-height:80px;border:2px solid #4a90e2;border-radius:5px;">
                         </div>
                     </div>
@@ -1333,11 +1428,21 @@
 
             <div id="message" class="message"></div>
 
+            <!-- Saving Indicator -->
+            <div class="saving-overlay" id="savingOverlay">
+                <div class="saving-box">
+                    <div class="saving-ring"><span class="saving-hand">✋</span></div>
+                    <div class="saving-title"><span class="saving-hourglass">⏳</span> Please Wait — Data Saving...</div>
+                    <div class="saving-subtitle">Do not close or refresh this page</div>
+                </div>
+            </div>
+
             <div class="button-group">
-                <button class="save-draft-btn" onclick="saveDraft()">Save Draft</button>
-                <button class="upload-draft-btn" onclick="document.getElementById('draftFileInput').click()">Upload Draft</button>
-                <button class="submit-btn" onclick="submitForm()">Submit</button>
-                <button class="pdf-btn" onclick="generatePDF()">Generate PDF</button>
+                <button class="save-draft-btn" data-icon="💾" onclick="saveDraft()">Save Draft</button>
+                <button class="upload-draft-btn" data-icon="📁" onclick="document.getElementById('draftFileInput').click()">Upload Draft</button>
+                <button class="submit-btn" data-icon="✅" onclick="submitForm()">Submit</button>
+                <button class="pdf-btn" data-icon="📄" onclick="generatePDF()">Generate PDF</button>
+                <button class="reset-btn" data-icon="🔄" onclick="clearDraft()">Reset</button>
             </div>
 
         </div>
@@ -1361,6 +1466,54 @@
 
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx7WDM2HP5ukVhVtQCS2fwdJ2BvKnv9xszb8gMMK273j90Njwb5_nmtfgikZSdGYReciw/exec";
         let dataSubmitted = false;
+        let lastSubmittedPayload = null;   // snapshot of field values as last saved
+        let formChangedSinceSubmit = false;
+
+        // Fields that actually get sent to the sheet
+        const PAYLOAD_FIELD_MAP = {
+            date:         'formDate',
+            time:         'time',
+            place:        'place',
+            trainNo:      'trainNo',
+            locoNo:       'locoNo',
+            lpName:       'lpName',
+            alpName:      'alpName',
+            otherRemarks: 'otherRemarks'
+        };
+
+        function getSubmitBtn() {
+            return document.querySelector('.submit-btn');
+        }
+
+        function disableSubmitBtn() {
+            const btn = getSubmitBtn();
+            if (btn) btn.disabled = true;
+            formChangedSinceSubmit = false;
+        }
+
+        function enableSubmitBtn() {
+            const btn = getSubmitBtn();
+            if (btn) btn.disabled = false;
+        }
+
+        // Called whenever any tracked form field changes
+        function onFormFieldChanged() {
+            if (dataSubmitted) {
+                formChangedSinceSubmit = true;
+                enableSubmitBtn();
+            }
+        }
+
+        // Attach change/input listeners to every field in the form so editing
+        // after a submit re-enables the Submit button
+        document.addEventListener("DOMContentLoaded", function() {
+            const container = document.querySelector('.form-container');
+            if (!container) return;
+            container.querySelectorAll('input, select, textarea').forEach(el => {
+                el.addEventListener('input', onFormFieldChanged);
+                el.addEventListener('change', onFormFieldChanged);
+            });
+        });
 
         // ── Message banner (errors stay 5s, success 3s) ───────────────────
         function showMessage(text, type) {
@@ -1373,7 +1526,10 @@
         }
 
         function submitForm() {
-            if (dataSubmitted) { showMessage('⚠️ Data already submitted!', 'error'); return; }
+            if (dataSubmitted && !formChangedSinceSubmit) {
+                showMessage('⚠️ Data already submitted! Make a change to save again.', 'error');
+                return;
+            }
             const cli1 = getCliValue('cliName', 'cliNameOtherText');
             const cli2 = getCliValue('cliName2', 'cliName2OtherText');
 
@@ -1384,7 +1540,7 @@
                 showMessage('❌ Please select at least one CLI Name!', 'error'); return;
             }
 
-            const payload = {
+            const fullPayload = {
                 sheet:            'Brake Power',
                 date:             document.getElementById('formDate').value,
                 time:             document.getElementById('time').value,
@@ -1398,7 +1554,36 @@
                 cliName2:         cli2
             };
 
+            let payload = fullPayload;
+            let isUpdate = false;
+
+            if (dataSubmitted && lastSubmittedPayload) {
+                // Only send fields that actually changed since the last save,
+                // plus the identifying keys so the sheet row can be matched.
+                const changed = {};
+                Object.keys(fullPayload).forEach(key => {
+                    if (fullPayload[key] !== lastSubmittedPayload[key]) {
+                        changed[key] = fullPayload[key];
+                    }
+                });
+
+                if (Object.keys(changed).length === 0) {
+                    showMessage('ℹ️ No new changes to save.', 'error');
+                    return;
+                }
+
+                payload = {
+                    sheet:    'Brake Power',
+                    mode:     'update',
+                    date:     fullPayload.date,     // identity key
+                    trainNo:  fullPayload.trainNo,   // identity key
+                    ...changed
+                };
+                isUpdate = true;
+            }
+
             showMessage('⏳ Submitting to Google Sheets...', 'success');
+            document.getElementById('savingOverlay').classList.add('active');
 
             // Build URL-encoded form body (required for no-cors cross-origin POST to Apps Script)
             const formBody = Object.entries(payload)
@@ -1413,9 +1598,16 @@
             })
             .then(() => {
                 dataSubmitted = true;
-                showMessage('✅ Data submitted to Google Sheets (Brake Power sheet) successfully!', 'success');
+                lastSubmittedPayload = fullPayload;   // snapshot full current values
+                disableSubmitBtn();
+                showMessage(isUpdate
+                    ? '✅ Changes saved to Google Sheets successfully!'
+                    : '✅ Data submitted to Google Sheets (Brake Power sheet) successfully!', 'success');
             })
-            .catch(() => showMessage('❌ Error submitting. Check network and try again.', 'error'));
+            .catch(() => showMessage('❌ Error submitting. Check network and try again.', 'error'))
+            .finally(() => {
+                document.getElementById('savingOverlay').classList.remove('active');
+            });
         }
 
         function generatePDF() {
@@ -2330,6 +2522,11 @@
             });
             _asSetStatus("draft", "Draft cleared");
             document.getElementById("clearDraftBtn").style.display = "none";
+            // Fresh form → allow a new submission
+            dataSubmitted = false;
+            lastSubmittedPayload = null;
+            formChangedSinceSubmit = false;
+            enableSubmitBtn();
         }
 
         function _asSchedule() {
